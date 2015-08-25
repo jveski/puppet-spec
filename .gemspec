@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email                 = ['jordan@puppetlabs.com']
   s.files                 = Dir.glob('lib/**/*')
 
-  s.add_runtime_dependency 'puppet'
+  s.add_runtime_dependency 'puppet', ENV['PUPPET_VERSION']
 
   s.add_development_dependency 'rspec', '3.3.0'
   s.add_development_dependency 'rake', '10.4.2'
