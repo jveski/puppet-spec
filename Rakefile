@@ -1,1 +1,5 @@
-require 'puppetlabs_spec_helper/rake_tasks'
+require 'rspec/core/rake_task'
+
+RSpec::Core::RakeTask.new(:spec) do |config|
+  config.rspec_opts = "--color"
+end

@@ -14,6 +14,4 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'rspec', '3.3.0'
   s.add_development_dependency 'rake', '10.4.2'
-  s.add_development_dependency 'puppetlabs_spec_helper', '0.10.3'
-  s.add_development_dependency 'mocha', '1.1.0'
 end
