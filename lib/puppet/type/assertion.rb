@@ -21,10 +21,20 @@ Puppet::Type.newtype(:assertion) do
 
     The referenced resource will be the subject of any assertions made as a result of this resource declaration.
     "
+
+    validate do |value|
+      fail Puppet::Error, "You must provide an assertion subject" unless value
+      fail Puppet::Error, "Attributes must be a resource reference" unless value.is_a? Puppet::Resource
+    end
   end
 
   newparam(:attributes) do
     desc "A hash of resource attributes to be evaluated against the corresponding values on the subject resource."
+
+    validate do |value|
+      fail Puppet::Error, "You must provide attributes to be asserted" unless value
+      fail Puppet::Error, "Attributes must be a hash" unless value.is_a? Hash
+    end
   end
 
 end
