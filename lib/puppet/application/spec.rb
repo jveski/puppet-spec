@@ -48,6 +48,7 @@ class Puppet::Application::Spec < Puppet::Application
     modulepath = get_modulepath(node)
     link_module(modulepath)
     catalog = Puppet::Resource::Catalog.indirection.find(node.name, :use_node => node)
+    catalog.to_ral
 
     Puppet::Test::TestHelper.after_each_test
     catalog
@@ -65,8 +66,7 @@ class Puppet::Application::Spec < Puppet::Application
         # has not been visited and
         # thus has no params.
         res[:subject] = catalog.resource(res[:subject].to_s)
-
-        assert(res)
+        res.resource_type.assert(res)
       end
     end
 
@@ -76,14 +76,6 @@ class Puppet::Application::Spec < Puppet::Application
     results.flatten!
     results.delete(nil)
     results
-  end
-
-  # Assert takes an assertion resource
-  # and asserts each parameter for equality
-  # against the corresponding attribute of
-  # its subject.
-  def assert(assertion)
-    # TODO
   end
 
   # Parse results formats the assertion

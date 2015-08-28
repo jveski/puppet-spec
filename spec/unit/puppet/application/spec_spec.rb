@@ -54,7 +54,8 @@ describe Puppet::Application::Spec do
 
   describe ".catalog" do
     let(:the_node) { double('node', :name => :stub_name) }
-    let(:the_indirection) { double('indirection', :find => :stub_catalog) }
+    let(:the_catalog) { double(:to_ral => nil) }
+    let(:the_indirection) { double('indirection', :find => the_catalog) }
 
     before do
       allow(Puppet::Test::TestHelper).to receive(:before_each_test)
@@ -97,23 +98,30 @@ describe Puppet::Application::Spec do
       expect(the_indirection).to have_received(:find).with(:stub_name, :use_node => the_node)
     end
 
+    it "should finalize the catalog" do
+      subject.catalog(:stub_path)
+      expect(the_catalog).to have_received(:to_ral)
+    end
+
     it "should clean up the test" do
       subject.catalog(:stub_path)
       expect(Puppet::Test::TestHelper).to have_received(:after_each_test)
     end
 
     it "should return the catalog" do
-      expect(subject.catalog(:stub_path)).to eq(:stub_catalog)
+      expect(subject.catalog(:stub_path)).to eq(the_catalog)
     end
   end
 
   describe ".evaluate" do
-    let(:the_resources) {[ double(:[] => :stub, :[]= => nil, :type => 'Assertion') ]}
+    let(:the_resources) {[
+      double(:[] => :stub,
+             :[]= => nil,
+             :type => 'Assertion',
+             :resource_type => the_type)
+    ]}
+    let(:the_type) { double(:assert => :stub_assertion) }
     let(:the_catalog) { double(:resources => the_resources, :resource => :stub_resource) }
-
-    before do
-      allow(subject).to receive(:assert).and_return(:stub_assertion)
-    end
 
     it "should check the type of each resource" do
       subject.evaluate(the_catalog)
@@ -129,7 +137,7 @@ describe Puppet::Application::Spec do
 
       it "should assert on the resource" do
         subject.evaluate(the_catalog)
-        expect(subject).to have_received(:assert).with(the_resources[0])
+        expect(the_type).to have_received(:assert).with(the_resources[0])
       end
     end
 
@@ -138,7 +146,7 @@ describe Puppet::Application::Spec do
 
       it "should not assert" do
         subject.evaluate(the_catalog)
-        expect(subject).to_not have_received(:assert)
+        expect(the_type).to_not have_received(:assert)
       end
     end
 
