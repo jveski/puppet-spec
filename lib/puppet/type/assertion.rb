@@ -37,4 +37,19 @@ Puppet::Type.newtype(:assertion) do
     end
   end
 
+  # Assert takes an assertion resource
+  # and returns a hash containing the
+  # data to be presented back to the
+  # user.
+  def self.assert(res)
+    res[:attributes].map do |attr, value|
+      result = {
+        :assertion => res,
+        :attribute => attr,
+      }
+      result[:success] = value == res[:subject][attr]
+      result
+    end
+  end
+
 end
