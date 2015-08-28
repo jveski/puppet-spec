@@ -1,27 +1,5 @@
 require 'puppet/type/assertion'
 
-describe Puppet::Type.type(:assertion) do
-  describe ".assert" do
-    let(:the_subject) { double(:[] => :stub_value) }
-    let(:the_resource) { double }
-
-    before do
-      allow(the_resource).to receive(:[]).with(:attributes).and_return({
-        :stub_key => :stub_value,
-        :another  => :nope,
-      })
-      allow(the_resource).to receive(:[]).with(:subject).and_return(the_subject)
-    end
-
-    it "should return the correct array of hashes" do
-      expect(Puppet::Type.type(:assertion).assert(the_resource)).to eq([
-        { :assertion => the_resource, :attribute => :stub_key, :success => true },
-        { :assertion => the_resource, :attribute => :another, :success => false },
-      ])
-    end
-  end
-end
-
 describe Puppet::Type::Assertion::ParameterAttributes do
   let(:the_resource) { double }
   subject { Puppet::Type::Assertion::ParameterAttributes.new(:resource => the_resource) }
