@@ -28,13 +28,19 @@ Puppet::Type.newtype(:assertion) do
     end
   end
 
-  newparam(:attributes) do
-    desc "A hash of resource attributes to be evaluated against the corresponding values on the subject resource."
+  newparam(:attribute) do
+    desc "An attribute of the subject resource to assert against"
 
     validate do |value|
-      fail Puppet::Error, "You must provide attributes to be asserted" unless value
-      fail Puppet::Error, "Attributes must be a hash" unless value.is_a? Hash
+      fail Puppet::Error, "You must provide attribute to be asserted" unless value
+
+      valid = @resource[:subject].valid_parameter?(value)
+      fail Puppet::Error, "#{value} is not a valid attribute of #{@resource[:subject].to_s}" unless valid
     end
+  end
+
+  newparam(:expectation) do
+    desc "The expected value of the subject's attribute"
   end
 
 end
