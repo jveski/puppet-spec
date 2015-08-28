@@ -1,4 +1,29 @@
-class Puppet::Parameter::Assertable < Puppet::Parameter; end
+class Puppet::Parameter::Assertable < Puppet::Parameter
+  attr_reader :input, :reference, :assertion_status
+
+  # Set the object's input value
+  # to the provided input, and
+  # return the param object.
+  def munge(value)
+    @input = value
+    self
+  end
+
+  # Assert takes a reference resource
+  # and checks this param's value
+  # against it's counterpart on
+  # the reference.
+  def assert!(reference)
+    raise "Cannot be asserted upon multiple times" if assertion_status
+    @reference = reference
+
+    if input == reference[self.name]
+      @assertion_status = :passed
+    else
+      @assertion_status = :failed
+    end
+  end
+end
 
 Puppet::Type.newtype(:assertion) do
 
