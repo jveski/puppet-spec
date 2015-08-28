@@ -24,20 +24,20 @@ class Puppet::Application::Spec < Puppet::Application
   end
 
   def process_spec(path)
-    # Compile a catalog for the spec
     catalog = catalog(path)
-
-    # Print notification that a
-    # spec was successfully compiled
     notify_compiled
 
-    # Evaluate the catalog for
-    # assertions. This method
-    # is responsible to print
-    # the appropriate output.
-    results = evaluate(catalog)
+    assertions = catalog.resources.select {|res| res.type == 'Assertion' }
 
-    print parse_results(results)
+    # Get the subject resource from the catalog rather than the
+    # reference provided from the parser. The reference's resource
+    # object does not contain any parameters for whatever reason.
+    assertions.map! do |res|
+      res[:subject] = catalog.resource(res[:subject].to_s)
+      res
+    end
+
+    print visit_assertions(assertions)
   end
 
   def catalog(path)
@@ -54,35 +54,11 @@ class Puppet::Application::Spec < Puppet::Application
     catalog
   end
 
-  # Evaluate visits each assertion resource
-  # and makes the assertion. Returns an array
-  # of assertion results. See .assert.
-  def evaluate(catalog)
-    results = catalog.resources.map do |res|
-      if res.type == 'Assertion'
-        # Get the subject from the
-        # catalog. At this point, 
-        # the subject resource obj
-        # has not been visited and
-        # thus has no params.
-        res[:subject] = catalog.resource(res[:subject].to_s)
-        res.resource_type.assert(res)
-      end
-    end
-
-    # Remove the nil objects
-    # resulting from non-assertion
-    # resources
-    results.flatten!
-    results.delete(nil)
-    results
-  end
-
-  # Parse results formats the assertion
-  # result hash and returns a string
-  # ready to be presented to the user.
-  def parse_results(results)
-    # TODO
+  # Return a string that contains
+  # output to be displayed to the
+  # user which represents the results
+  # of the assertions.
+  def visit_assertions(assertions)
   end
 
   # Print an rspec style dot

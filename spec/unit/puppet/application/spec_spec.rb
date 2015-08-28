@@ -30,10 +30,19 @@ describe Puppet::Application::Spec do
   end
 
   describe ".process_spec" do
+    let(:the_catalog) { double(:resources => the_resources) }
+    let(:the_resources) {[
+      double(:[]= => nil, :type => 'Assertion', :[] => :stub_subject1),
+      double(:[]= => nil, :type => 'Not an Assertion', :[] => :stub_subject2),
+    ]}
+
     before do
-      allow(subject).to receive(:catalog).and_return(:stub_catalog)
+      allow(subject).to receive(:catalog).and_return(the_catalog)
+      allow(the_catalog).to receive(:resource).with('stub_subject1').and_return(:stub_catalog_resource)
       allow(subject).to receive(:notify_compiled)
       allow(subject).to receive(:evaluate)
+      allow(subject).to receive(:print)
+      allow(subject).to receive(:visit_assertions).and_return(:stub_assertions)
     end
 
     it "should compile the catalog" do
@@ -46,9 +55,19 @@ describe Puppet::Application::Spec do
       expect(subject).to have_received(:notify_compiled)
     end
 
-    it "should visit the catalog" do
+    it "should set each subject from the catalog" do
       subject.process_spec(:stub_path)
-      expect(subject).to have_received(:evaluate).with(:stub_catalog)
+      expect(the_resources[0]).to have_received(:[]=).with(:subject, :stub_catalog_resource)
+    end
+
+    it "should visit the assertions" do
+      subject.process_spec(:stub_path)
+      expect(subject).to have_received(:visit_assertions).with([the_resources[0]])
+    end
+
+    it "should print the results" do
+      subject.process_spec(:stub_path)
+      expect(subject).to have_received(:print).with(:stub_assertions)
     end
   end
 
@@ -113,53 +132,7 @@ describe Puppet::Application::Spec do
     end
   end
 
-  describe ".evaluate" do
-    let(:the_resources) {[
-      double(:[] => :stub,
-             :[]= => nil,
-             :type => 'Assertion',
-             :resource_type => the_type)
-    ]}
-    let(:the_type) { double(:assert => :stub_assertion) }
-    let(:the_catalog) { double(:resources => the_resources, :resource => :stub_resource) }
-
-    it "should check the type of each resource" do
-      subject.evaluate(the_catalog)
-      expect(the_resources[0]).to have_received(:type)
-    end
-
-    context "when the resource is an assertion" do
-
-      it "should get its subject from the catalog" do
-        subject.evaluate(the_catalog)
-        expect(the_catalog).to have_received(:resource).with('stub')
-      end
-
-      it "should assert on the resource" do
-        subject.evaluate(the_catalog)
-        expect(the_type).to have_received(:assert).with(the_resources[0])
-      end
-    end
-
-    context "when the resource is not an assertion" do
-      let(:the_resources) {[ double(:[] => :stub, :[]= => nil, :type => :nope) ]}
-
-      it "should not assert" do
-        subject.evaluate(the_catalog)
-        expect(the_type).to_not have_received(:assert)
-      end
-    end
-
-    it "should return the assertion results" do
-      expect(subject.evaluate(the_catalog)).to eq([:stub_assertion])
-    end
-  end
-
-  describe ".assert" do
-    # TODO
-  end
-
-  describe ".print_results" do
+  describe ".visit_assertions" do
     # TODO
   end
 
