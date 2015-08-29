@@ -4,15 +4,13 @@ Puppet::Type.newtype(:assertion) do
 
   The assertion type defines an assertion that will be evaluated by the
   spec application.
-
-  Arbirary parameters are allowed. Each will result in an equality assertion against
-  the corresponding attribute of the subject resource (see the subject parameter).
   "
 
   newparam(:name) do
     desc "A plain text message describing what the assertion is intended to prove.
 
-    Example: 'the configuration file'
+    The given text should form a sentence using the type's name.
+    Example: assertion { 'that the configuration file has the correct contents': }
     "
   end
 
