@@ -2,10 +2,6 @@ require 'puppet/application/spec'
 
 describe Puppet::Application::Spec do
 
-  describe ".run_command" do
-    # TODO
-  end
-
   describe ".process_spec_directory" do
     before do
       allow(subject).to receive(:process_spec).with(:stub_spec1).and_return(:stub_result1)

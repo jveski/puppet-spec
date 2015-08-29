@@ -6,13 +6,13 @@ require 'fileutils'
 class Puppet::Application::Spec < Puppet::Application
   include Puppet::Util::Colors
 
-  # TODO
   def run_command
     begin
       Puppet::Test::TestHelper.initialize
       process_spec_directory(specdir)
     rescue Exception => e
-      puts e.message
+      print colorize(:red, "#{e.message}\n")
+      exit 1
     end
   end
 
