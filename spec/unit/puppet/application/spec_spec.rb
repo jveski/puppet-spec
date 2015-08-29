@@ -8,7 +8,11 @@ describe Puppet::Application::Spec do
 
   describe ".process_spec_directory" do
     before do
-      allow(subject).to receive(:process_spec).and_return(:stub_result)
+      allow(subject).to receive(:process_spec).with(:stub_spec1).and_return(:stub_result1)
+      allow(subject).to receive(:process_spec).with(:stub_spec2).and_return(:stub_result2)
+      allow(subject).to receive(:process_spec).with(:stub_spec3).and_return([:stub_result3])
+      allow(subject).to receive(:visit_assertions).and_return(:stub_results)
+      allow(subject).to receive(:print)
       allow(Dir).to receive(:glob).and_return([
         :stub_spec1,
         :stub_spec2,
@@ -27,6 +31,17 @@ describe Puppet::Application::Spec do
       expect(subject).to have_received(:process_spec).once.with(:stub_spec2)
       expect(subject).to have_received(:process_spec).once.with(:stub_spec3)
     end
+
+    it "should evaluate the assertion resources" do
+      subject.process_spec_directory('stub_path')
+      expect(subject).to have_received(:visit_assertions).with([:stub_result1, :stub_result2, :stub_result3])
+    end
+
+    it "should print the results" do
+      subject.process_spec_directory('stub_path')
+      expect(subject).to have_received(:print).once.with("\n\n")
+      expect(subject).to have_received(:print).once.with(:stub_results)
+    end
   end
 
   describe ".process_spec" do
@@ -41,7 +56,6 @@ describe Puppet::Application::Spec do
       allow(the_catalog).to receive(:resource).with('stub_subject1').and_return(:stub_catalog_resource)
       allow(subject).to receive(:notify_compiled)
       allow(subject).to receive(:evaluate)
-      allow(subject).to receive(:print)
       allow(subject).to receive(:visit_assertions).and_return(:stub_assertions)
     end
 
@@ -60,14 +74,8 @@ describe Puppet::Application::Spec do
       expect(the_resources[0]).to have_received(:[]=).with(:subject, :stub_catalog_resource)
     end
 
-    it "should visit the assertions" do
-      subject.process_spec(:stub_path)
-      expect(subject).to have_received(:visit_assertions).with([the_resources[0]])
-    end
-
-    it "should print the results" do
-      subject.process_spec(:stub_path)
-      expect(subject).to have_received(:print).with(:stub_assertions)
+    it "should return the assertions" do
+      expect(subject.process_spec(:stub_path)).to eq([the_resources[0]])
     end
   end
 

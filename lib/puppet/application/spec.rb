@@ -17,10 +17,9 @@ class Puppet::Application::Spec < Puppet::Application
   end
 
   def process_spec_directory(specdir)
-    # Evaluate the spec directory
-    # and process each applicable
-    # file.
-    Dir.glob("#{specdir}/**/*_spec.pp").map { |spec| process_spec(spec) }
+    results = Dir.glob("#{specdir}/**/*_spec.pp").map { |spec| process_spec(spec) }.flatten
+    print "\n\n"
+    print visit_assertions(results)
   end
 
   def process_spec(path)
@@ -32,12 +31,10 @@ class Puppet::Application::Spec < Puppet::Application
     # Get the subject resource from the catalog rather than the
     # reference provided from the parser. The reference's resource
     # object does not contain any parameters for whatever reason.
-    assertions.map! do |res|
+    assertions.map do |res|
       res[:subject] = catalog.resource(res[:subject].to_s)
       res
     end
-
-    print visit_assertions(assertions)
   end
 
   def catalog(path)
