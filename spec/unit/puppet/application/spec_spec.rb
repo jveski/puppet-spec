@@ -132,21 +132,6 @@ describe Puppet::Application::Spec do
     end
   end
 
-  describe ".visit_assertions" do
-    # TODO
-  end
-
-  describe ".notify_compiled" do
-    before do
-      allow(subject).to receive(:print)
-    end
-
-    it "should print a green period" do
-      subject.notify_compiled
-      expect(subject).to have_received(:print).with("\e[0;32m.\e[0m")
-    end
-  end
-
   describe ".get_modulepath" do
     context "when given a node object" do
       let(:the_environment) { double('environment', :full_modulepath => [:stub_path, 2]) }

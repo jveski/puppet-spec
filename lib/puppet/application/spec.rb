@@ -59,6 +59,26 @@ class Puppet::Application::Spec < Puppet::Application
   # user which represents the results
   # of the assertions.
   def visit_assertions(assertions)
+    count = 0
+    failed_count = 0
+
+    msg = assertions.map do |assertion|
+      count += 1
+      unless assertion[:expectation] == assertion[:subject][assertion[:attribute]]
+        failed_count += 1
+        msg = colorize(:red, "#{failed_count}) Assertion #{assertion[:name]} failed on #{assertion[:subject]}\n")
+        msg += colorize(:blue, "  Wanted: ")
+        msg += "#{assertion[:attribute]} => '#{assertion[:expectation]}'\n"
+        msg += colorize(:blue, "  Got:    ")
+        msg += "#{assertion[:attribute]} => '#{assertion[:subject][assertion[:attribute]]}'\n\n"
+      end
+    end
+
+    footer = "Evaluated #{count} assertion"
+    footer += "s" if count > 1
+    msg.push(colorize(:yellow, "#{footer}\n"))
+    
+    msg.join
   end
 
   # Print an rspec style dot
