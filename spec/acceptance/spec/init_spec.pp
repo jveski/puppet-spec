@@ -3,6 +3,8 @@ stub_facts({
   another  => '1.2.3',
 })
 
+stub_class("another::class")
+
 include acceptance
 
 assertion { 'the package should be the correct version':
@@ -21,4 +23,8 @@ assertion { 'the service should start on boot':
   subject     => Service['the service'],
   attribute   => 'enable',
   expectation => true,
+}
+
+assertion { 'the class containing all the other stuff should be included':
+  subject => Class['another::class'],
 }

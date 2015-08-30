@@ -1,5 +1,7 @@
 class acceptance {
 
+  include another::class
+
   package { 'the package':
     ensure   => $another,
     provider => 'gem',
