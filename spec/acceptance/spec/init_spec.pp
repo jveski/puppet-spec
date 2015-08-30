@@ -1,3 +1,8 @@
+stub_facts({
+  osfamily => 'the contents',
+  another  => '1.2.3',
+})
+
 include acceptance
 
 assertion { 'the package should be the correct version':

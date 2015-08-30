@@ -1,13 +1,13 @@
 class acceptance {
 
   package { 'the package':
-    ensure   => '1.2.3',
+    ensure   => $another,
     provider => 'gem',
   }
 
   file { '/tmp/test':
     ensure  => present,
-    content => 'the contents',
+    content => $::osfamily,
   }
 
   service { 'the service':
