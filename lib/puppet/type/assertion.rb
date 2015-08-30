@@ -31,9 +31,6 @@ Puppet::Type.newtype(:assertion) do
 
     validate do |value|
       fail Puppet::Error, "You must provide attribute to be asserted" unless value
-
-      valid = @resource[:subject].valid_parameter?(value)
-      fail Puppet::Error, "#{value} is not a valid attribute of #{@resource[:subject].to_s}" unless valid
     end
   end
 

@@ -25,15 +25,6 @@ describe Puppet::Type::Assertion::ParameterAttribute do
       end
     end
 
-    context "when given an invalid parameter" do
-      let(:the_subject) { double(:valid_parameter? => false) }
-      it "should raise an error" do
-        expect{subject.validate('stub attribute')}.to raise_error(
-          'stub attribute is not a valid attribute of #[Double (anonymous)]'
-        )
-      end
-    end
-
   end
 end
 
