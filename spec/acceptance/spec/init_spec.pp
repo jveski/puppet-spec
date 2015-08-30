@@ -5,6 +5,8 @@ stub_facts({
 
 stub_class("another::class")
 
+stub_type("another::type")
+
 include acceptance
 
 assertion { 'the package should be the correct version':
@@ -27,4 +29,14 @@ assertion { 'the service should start on boot':
 
 assertion { 'the class containing all the other stuff should be included':
   subject => Class['another::class'],
+}
+
+assertion { 'the jfjfclass containing all the other stuff should be included':
+  subject   => Class['another::class'],
+}
+
+assertion { 'the other thing is around':
+  subject     => Another::Type['the other thing'],
+  attribute   => 'ensure',
+  expectation => 'around',
 }

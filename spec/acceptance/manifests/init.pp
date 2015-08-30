@@ -17,4 +17,8 @@ class acceptance {
     enable => true,
   }
 
+  another::type { 'the other thing':
+    ensure => 'around',
+  }
+
 }
