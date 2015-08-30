@@ -31,10 +31,6 @@ assertion { 'the class containing all the other stuff should be included':
   subject => Class['another::class'],
 }
 
-assertion { 'the jfjfclass containing all the other stuff should be included':
-  subject   => Class['another::class'],
-}
-
 assertion { 'the other thing is around':
   subject     => Another::Type['the other thing'],
   attribute   => 'ensure',
