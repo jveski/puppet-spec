@@ -1,4 +1,5 @@
 # puppet-spec
+[![Build Status](https://travis-ci.org/jolshevski/puppet-spec.svg?branch=master)](https://travis-ci.org/jolshevski/puppet-spec)
 
 Test Puppet code with Puppet code.
 
