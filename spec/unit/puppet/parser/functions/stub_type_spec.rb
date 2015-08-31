@@ -34,3 +34,14 @@ describe "the stub_type function" do
   end
 
 end
+
+describe Puppet::Resource::Type::Stub do
+  subject { Puppet::Resource::Type::Stub.new(:definition, 'stub resource') }
+
+  describe ".valid_parameter?" do
+    it "should return true" do
+      expect(subject.valid_parameter?('anything')).to be true
+    end
+  end
+
+end
