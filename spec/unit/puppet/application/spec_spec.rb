@@ -189,6 +189,10 @@ describe Puppet::Application::Spec do
   end
 
   describe ".visit_assertions" do
+    before do
+      subject.stubs(:validate_assertion)
+    end
+
     context "when given one passing assertion" do
       let(:the_assertions) {[
         {
@@ -231,6 +235,10 @@ describe Puppet::Application::Spec do
           "\e[0;33mEvaluated 2 assertions\n\e[0m"
         )
       end
+      it "should validate each assertion" do
+        subject.expects(:validate_assertion).with(the_assertions[0])
+        subject.visit_assertions(the_assertions)
+      end
     end
 
     context "when given one passing and one failing assertion" do
@@ -256,6 +264,36 @@ describe Puppet::Application::Spec do
         expect(subject.visit_assertions(the_assertions)).to eq(
           "\e[0;31m1) Assertion stub_name_2 failed on {\"stub_attribute_2\"=>\"not the expectation\"}\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the expectation'\n\n\e[0;33mEvaluated 2 assertions\n\e[0m"
         )
+      end
+    end
+  end
+
+  describe ".validate_assertion" do
+    context "when not given a subject" do
+      let(:the_assertion) { {:subject => nil} }
+
+      it "should raise an error" do
+        expect{subject.validate_assertion(the_assertion)}.to raise_error(
+          '{:subject=>nil} requires a subject'
+        )
+      end
+    end
+
+    context "when given a subject, expectation, and no attribute" do
+      let(:the_assertion) { {:subject => true, :expectation => true, :attribute => nil} }
+
+      it "should raise an error" do
+        expect{subject.validate_assertion(the_assertion)}.to raise_error(
+          '{:subject=>true, :expectation=>true, :attribute=>nil} requires an attribute when an expectation is given'
+        )
+      end
+    end
+
+    context "when given a subject, expectation, and attribute" do
+      let(:the_assertion) { {:subject => true, :expectation => true, :attribute => true } }
+
+      it "should raise an error" do
+        expect{subject.validate_assertion(the_assertion)}.to_not raise_error
       end
     end
   end
