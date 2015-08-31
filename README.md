@@ -84,6 +84,8 @@ Any spec manifests stored in the module-under-test's `spec` directory with a `*_
 ## Stubbing
 In order to effectively unit test a class, we may need to stub certain dependencies and/or potential side affects. Puppet spec provides three functions that can be used to stub at the Puppet compiler's top scope. Naturally, test cases are parsed top down, so the stub functions must be called before any affected resources are evaluated.
 
+For examples, check out the acceptance test suite.
+
 #### stub_facts({})
 Stub_facts takes a hash of fact/value pairs, and... stubs them. Technically it just defines top scope variables, but stub_top_scope_variables() doesn't quite roll off the tongue.
 
