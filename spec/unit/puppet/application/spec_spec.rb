@@ -1,73 +1,78 @@
+require 'puppetlabs_spec_helper/module_spec_helper'
 require 'puppet/application/spec'
 
 describe Puppet::Application::Spec do
 
   describe ".process_spec_directory" do
+    let(:the_files) {[
+      :stub_spec1,
+      :stub_spec2,
+      :stub_spec3,
+    ]}
+
     before do
-      allow(subject).to receive(:process_spec).with(:stub_spec1).and_return(:stub_result1)
-      allow(subject).to receive(:process_spec).with(:stub_spec2).and_return(:stub_result2)
-      allow(subject).to receive(:process_spec).with(:stub_spec3).and_return([:stub_result3])
-      allow(subject).to receive(:visit_assertions).and_return(:stub_results)
-      allow(subject).to receive(:print)
-      allow(Dir).to receive(:glob).and_return([
-        :stub_spec1,
-        :stub_spec2,
-        :stub_spec3,
-      ])
+      subject.stubs(:process_spec).with(:stub_spec1).returns(:stub_result1)
+      subject.stubs(:process_spec).with(:stub_spec2).returns(:stub_result2)
+      subject.stubs(:process_spec).with(:stub_spec3).returns([:stub_result3])
+      subject.stubs(:visit_assertions).returns(:stub_results)
+      subject.stubs(:print)
+      Dir.stubs(:glob).returns(the_files)
     end
 
     it "should evaluate the specdir" do
+      Dir.expects(:glob).with('stub_path/**/*_spec.pp').returns(the_files)
       subject.process_spec_directory('stub_path')
-      expect(Dir).to have_received(:glob).with('stub_path/**/*_spec.pp')
     end
 
     it "should process each spec" do
+      subject.expects(:process_spec).once.with(the_files[0])
+      subject.expects(:process_spec).once.with(the_files[1])
+      subject.expects(:process_spec).once.with(the_files[2])
       subject.process_spec_directory('stub_path')
-      expect(subject).to have_received(:process_spec).once.with(:stub_spec1)
-      expect(subject).to have_received(:process_spec).once.with(:stub_spec2)
-      expect(subject).to have_received(:process_spec).once.with(:stub_spec3)
     end
 
     it "should evaluate the assertion resources" do
+      subject.expects(:visit_assertions).with(
+        [:stub_result1, :stub_result2, :stub_result3]
+      ).returns(:stub_results)
       subject.process_spec_directory('stub_path')
-      expect(subject).to have_received(:visit_assertions).with([:stub_result1, :stub_result2, :stub_result3])
     end
 
     it "should print the results" do
+      subject.expects(:print).once.with("\n\n")
+      subject.expects(:print).once.with(:stub_results)
       subject.process_spec_directory('stub_path')
-      expect(subject).to have_received(:print).once.with("\n\n")
-      expect(subject).to have_received(:print).once.with(:stub_results)
     end
   end
 
   describe ".process_spec" do
-    let(:the_catalog) { double(:resources => the_resources) }
+    let(:the_catalog) { stub(:resources => the_resources) }
     let(:the_resources) {[
-      double(:[]= => nil, :type => 'Assertion', :[] => :stub_subject1),
-      double(:[]= => nil, :type => 'Not an Assertion', :[] => :stub_subject2),
+      stub(:[]= => nil, :type => 'Assertion', :[] => :stub_subject1),
+      stub(:[]= => nil, :type => 'Not an Assertion', :[] => :stub_subject2),
     ]}
 
     before do
-      allow(subject).to receive(:catalog).and_return(the_catalog)
-      allow(the_catalog).to receive(:resource).with('stub_subject1').and_return(:stub_catalog_resource)
-      allow(subject).to receive(:notify_compiled)
-      allow(subject).to receive(:evaluate)
-      allow(subject).to receive(:visit_assertions).and_return(:stub_assertions)
+      subject.stubs(:catalog).returns(the_catalog)
+      the_catalog.stubs(:resource).with('stub_subject1').returns(:stub_catalog_resource)
+      subject.stubs(:notify_compiled)
+      subject.stubs(:evaluate)
+      subject.stubs(:visit_assertions).returns(:stub_assertions)
     end
 
     it "should compile the catalog" do
+      subject.expects(:catalog).with(:stub_path).returns(the_catalog)
       subject.process_spec(:stub_path)
-      expect(subject).to have_received(:catalog).with(:stub_path)
     end
 
     it "should print a notification" do
+      subject.expects(:notify_compiled)
       subject.process_spec(:stub_path)
-      expect(subject).to have_received(:notify_compiled)
     end
 
     it "should set each subject from the catalog" do
+      the_resources[0].expects(:[]=).with(:subject, :stub_catalog_resource)
       subject.process_spec(:stub_path)
-      expect(the_resources[0]).to have_received(:[]=).with(:subject, :stub_catalog_resource)
     end
 
     it "should return the assertions" do
@@ -76,59 +81,59 @@ describe Puppet::Application::Spec do
   end
 
   describe ".catalog" do
-    let(:the_node) { double('node', :name => :stub_name) }
-    let(:the_catalog) { double(:to_ral => nil) }
-    let(:the_indirection) { double('indirection', :find => the_catalog) }
+    let(:the_node) { stub('node', :name => :stub_name) }
+    let(:the_catalog) { stub(:to_ral => nil) }
+    let(:the_indirection) { stub('indirection', :find => the_catalog) }
 
     before do
-      allow(Puppet::Test::TestHelper).to receive(:before_each_test)
-      allow(Puppet::Test::TestHelper).to receive(:after_each_test)
-      allow(Puppet).to receive(:[]=)
-      allow(Puppet::Node).to receive(:new).and_return(the_node)
-      allow(Puppet::Resource::Catalog).to receive(:indirection).and_return(the_indirection)
-      allow(File).to receive(:read).and_return(:stub_file)
-      allow(subject).to receive(:get_modulepath).and_return(:the_modulepath)
-      allow(subject).to receive(:link_module)
+      Puppet::Test::TestHelper.stubs(:before_each_test)
+      Puppet::Test::TestHelper.stubs(:after_each_test)
+      Puppet.stubs(:[]=)
+      Puppet::Node.stubs(:new).returns(the_node)
+      Puppet::Resource::Catalog.stubs(:indirection).returns(the_indirection)
+      File.stubs(:read).returns(:stub_file)
+      subject.stubs(:get_modulepath).returns(:the_modulepath)
+      subject.stubs(:link_module)
     end
 
     it "should initialize Puppet" do
+      Puppet::Test::TestHelper.expects(:before_each_test)
       subject.catalog(:stub_path)
-      expect(Puppet::Test::TestHelper).to have_received(:before_each_test)
     end
 
     it "should read the spec manifest" do
+      File.expects(:read).with(:stub_path)
       subject.catalog(:stub_path)
-      expect(File).to have_received(:read).with(:stub_path)
     end
 
     it "should give Puppet the spec manifest" do
+      Puppet.expects(:[]=).with(:code, :stub_file)
       subject.catalog(:stub_path)
-      expect(Puppet).to have_received(:[]=).with(:code, :stub_file)
     end
 
     it "should calculate the modulepath" do
+      subject.expects(:get_modulepath).with(the_node)
       subject.catalog(:stub_path)
-      expect(subject).to have_received(:get_modulepath).with(the_node)
     end
 
     it "should create the module symlink" do
+      subject.expects(:link_module)
       subject.catalog(:stub_path)
-      expect(subject).to have_received(:link_module)
     end
 
     it "should compile the catalog" do
+      the_indirection.expects(:find).with(:stub_name, :use_node => the_node).returns(the_catalog)
       subject.catalog(:stub_path)
-      expect(the_indirection).to have_received(:find).with(:stub_name, :use_node => the_node)
     end
 
     it "should finalize the catalog" do
+      the_catalog.expects(:to_ral)
       subject.catalog(:stub_path)
-      expect(the_catalog).to have_received(:to_ral)
     end
 
     it "should clean up the test" do
+      Puppet::Test::TestHelper.expects(:after_each_test)
       subject.catalog(:stub_path)
-      expect(Puppet::Test::TestHelper).to have_received(:after_each_test)
     end
 
     it "should return the catalog" do
@@ -138,8 +143,8 @@ describe Puppet::Application::Spec do
 
   describe ".get_modulepath" do
     context "when given a node object" do
-      let(:the_environment) { double('environment', :full_modulepath => [:stub_path, 2]) }
-      let(:the_node) { double('node', :environment => the_environment) }
+      let(:the_environment) { stub('environment', :full_modulepath => [:stub_path, 2]) }
+      let(:the_node) { stub('node', :environment => the_environment) }
 
       it "should return the correct modulepath" do
         expect(subject.get_modulepath(the_node)).to eq(:stub_path)
@@ -149,100 +154,92 @@ describe Puppet::Application::Spec do
 
   describe ".link_module" do
     before do
-      allow(Dir).to receive(:pwd).and_return(:stub_pwd)
-      allow(Dir).to receive(:exist?)
-      allow(File).to receive(:symlink?)
-      allow(File).to receive(:basename).and_return(:stub_name)
-      allow(File).to receive(:join).and_return(:stub_sympath)
-      allow(FileUtils).to receive(:mkdir_p)
-      allow(FileUtils).to receive(:ln_s)
+      Dir.stubs(:pwd).returns(:stub_pwd)
+      Dir.stubs(:exist?)
+      File.stubs(:symlink?)
+      File.stubs(:basename).returns(:stub_name)
+      File.stubs(:join).returns(:stub_sympath)
+      FileUtils.stubs(:mkdir_p)
+      FileUtils.stubs(:ln_s)
     end
 
     it "should get the module's directory" do
+      Dir.expects(:pwd).returns(:stub_pwd)
       subject.link_module(:stub_module)
-      expect(Dir).to have_received(:pwd)
     end
 
     it "should get the module's name" do
+      File.expects(:basename).with(:stub_pwd).returns(:stub_name)
       subject.link_module(:stub_module)
-      expect(File).to have_received(:basename).with(:stub_pwd)
     end
 
     it "should get the symlink's path" do
+      File.expects(:join).with(:stub_module, :stub_name).returns(:stub_sympath)
       subject.link_module(:stub_module)
-      expect(File).to have_received(:join).with(:stub_module, :stub_name)
     end
 
     it "should check if the modulepath exists" do
+      Dir.expects(:exist?).with(:stub_module)
       subject.link_module(:stub_module)
-      expect(Dir).to have_received(:exist?).with(:stub_module)
     end
 
     context "when the modulepath exists" do
-      before do
-        allow(Dir).to receive(:exist?).and_return(true)
-      end
+      before { Dir.stubs(:exist?).returns(true) }
       it "should not create the modulepath directory" do
+        FileUtils.expects(:mkdir_p).never
         subject.link_module(:stub_module)
-        expect(FileUtils).to_not have_received(:mkdir_p)
       end
     end
 
     context "when the modulepath does not exist" do
-      before do
-        allow(Dir).to receive(:exist?).and_return(false)
-      end
+      before { Dir.stubs(:exist?).returns(false) }
       it "should create the modulepath directory" do
+        FileUtils.expects(:mkdir_p).with(:stub_module)
         subject.link_module(:stub_module)
-        expect(FileUtils).to have_received(:mkdir_p).with(:stub_module)
       end
     end
 
     it "should check if the symlink exists" do
+      File.expects(:symlink?).with(:stub_sympath)
       subject.link_module(:stub_module)
-      expect(File).to have_received(:symlink?).with(:stub_sympath)
     end
 
     context "when the symlink does exist" do
-      before do
-        allow(File).to receive(:symlink?).and_return(true)
-      end
+      before { File.stubs(:symlink?).returns(true) }
       it "should not create the symlink" do
+        FileUtils.expects(:ln_s).never
         subject.link_module(:stub_module)
-        expect(FileUtils).to_not have_received(:ln_s)
       end
     end
 
     context "when the symlink does not exist" do
-      before do
-        allow(File).to receive(:symlink?).and_return(false)
-      end
+      before { File.stubs(:symlink?).returns(false) }
       it "should not create the symlink" do
+        FileUtils.expects(:ln_s).with(:stub_pwd, :stub_sympath)
         subject.link_module(:stub_module)
-        expect(FileUtils).to have_received(:ln_s).with(:stub_pwd, :stub_sympath)
       end
     end
   end
 
   describe ".specdir" do
     before do
-      allow(Dir).to receive(:pwd).and_return(:stub_pwd)
-      allow(Dir).to receive(:exist?).and_return(true)
-      allow(File).to receive(:join).and_return(:stub_specdir)
+      Dir.stubs(:pwd).returns(:stub_pwd)
+      Dir.stubs(:exist?).returns(true)
+      File.stubs(:join).returns(:stub_specdir)
     end
 
     it "should get the pwd" do
+      Dir.expects(:pwd).returns(:stub_pwd)
       subject.specdir
-      expect(Dir).to have_received(:pwd)
     end
 
     it "should parse the specdir" do
+      File.expects(:join).with(:stub_pwd, 'spec').returns(:stub_specdir)
       subject.specdir
-      expect(File).to have_received(:join).with(:stub_pwd, 'spec')
     end
 
     context "when the CWD contains a spec directory" do
-      before { allow(Dir).to receive(:exist?).and_return(true) }
+      before { Dir.stubs(:exist?).returns(true) }
 
       it "should return the path to the specdir" do
         expect(subject.specdir).to eq(:stub_specdir)
@@ -254,7 +251,7 @@ describe Puppet::Application::Spec do
     end
 
     context "when the CWD does not contain a spec directory" do
-      before { allow(Dir).to receive(:exist?).and_return(false) }
+      before { Dir.stubs(:exist?).returns(false) }
 
       it "should raise an error" do
         expect{subject.specdir}.to raise_error(

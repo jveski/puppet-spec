@@ -1,13 +1,14 @@
+require 'puppetlabs_spec_helper/module_spec_helper'
 require 'puppet/type/assertion'
 
 describe Puppet::Type::Assertion::ParameterAttribute do
-  let(:the_resource) { double }
-  let(:the_subject) { double }
+  let(:the_resource) { stub }
+  let(:the_subject) { stub }
   subject { Puppet::Type::Assertion::ParameterAttribute.new(:resource => the_resource) }
 
   describe ".validate" do
     before do
-      allow(the_resource).to receive(:[]).and_return(the_subject)
+      the_resource.stubs(:[]).returns(the_subject)
     end
 
     context "when not given a value" do
@@ -19,7 +20,7 @@ describe Puppet::Type::Assertion::ParameterAttribute do
     end
 
     context "when given a valid parameter" do
-      let(:the_subject) { double(:valid_parameter? => true) }
+      let(:the_subject) { stub(:valid_parameter? => true) }
       it "should not raise an error" do
         expect{subject.validate('stub attribute')}.to_not raise_error
       end
@@ -29,7 +30,7 @@ describe Puppet::Type::Assertion::ParameterAttribute do
 end
 
 describe Puppet::Type::Assertion::ParameterSubject do
-  let(:the_resource) { double }
+  let(:the_resource) { stub }
   subject { Puppet::Type::Assertion::ParameterSubject.new(:resource => the_resource) }
 
   describe ".validate" do

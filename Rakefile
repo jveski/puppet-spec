@@ -1,8 +1,4 @@
-require 'rspec/core/rake_task'
-
-RSpec::Core::RakeTask.new(:spec) do |config|
-  config.rspec_opts = "--color"
-end
+require 'puppetlabs_spec_helper/rake_tasks'
 
 task(:acceptance) do
   result = `cd spec/acceptance; bundle exec puppet spec`

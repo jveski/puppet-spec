@@ -1,62 +1,61 @@
+require 'puppetlabs_spec_helper/module_spec_helper'
 require 'puppet/application/spec'
 
 describe Puppet::Application::Spec do
 
   describe ".run_command" do
     before do
-      allow(Puppet::Test::TestHelper).to receive(:initialize)
-      allow(subject).to receive(:process_spec_directory)
-      allow(subject).to receive(:print)
-      allow(subject).to receive(:exit)
-      allow(subject).to receive(:specdir).and_return(:stub_specdir)
+      Puppet::Test::TestHelper.stubs(:initialize)
+      subject.stubs(:process_spec_directory)
+      subject.stubs(:print)
+      subject.stubs(:exit)
+      subject.stubs(:specdir).returns(:stub_specdir)
     end
 
     it "should initialize Puppet" do
+      Puppet::Test::TestHelper.expects(:initialize)
       subject.run_command
-      expect(Puppet::Test::TestHelper).to have_received(:initialize)
     end
 
     it "should process the spec directory" do
+      subject.expects(:process_spec_directory).with(:stub_specdir)
       subject.run_command
-      expect(subject).to have_received(:process_spec_directory).with(:stub_specdir)
     end
 
     context "when an error is not raised" do
       it "should not print to the console" do
         subject.run_command
-        expect(subject).to_not have_received(:print)
+        subject.expects(:print).never
       end
 
       it "should not exit" do
         subject.run_command
-        expect(subject).to_not have_received(:exit)
+        subject.expects(:exit).never
       end
     end
 
     context "when an error is raised" do
       let(:the_error) { Exception.new('stub exception') }
-      before { allow(subject).to receive(:process_spec_directory).and_raise(the_error) }
+      before { subject.stubs(:process_spec_directory).raises(the_error) }
 
       it "should print it to the console" do
+        subject.expects(:print).with("\e[0;31mstub exception\n\e[0m")
         subject.run_command
-        expect(subject).to have_received(:print).with("\e[0;31mstub exception\n\e[0m")
       end
 
       it "should exit 1" do
+        subject.expects(:exit).with(1)
         subject.run_command
-        expect(subject).to have_received(:exit).with(1)
       end
     end
   end
 
   describe ".notify_compiled" do
-    before do
-      allow(subject).to receive(:print)
-    end
+    before { subject.stubs(:print) }
 
     it "should print a green period" do
+      subject.expects(:print).with("\e[0;32m.\e[0m")
       subject.notify_compiled
-      expect(subject).to have_received(:print).with("\e[0;32m.\e[0m")
     end
   end
 
