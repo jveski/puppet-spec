@@ -61,6 +61,9 @@ class Puppet::Application::Spec < Puppet::Application
 
     msg = assertions.map do |assertion|
       count += 1
+      raise Puppet::Error, "#{assertion} requires a subject" unless assertion[:subject]
+      raise Puppet::Error, "#{assertion} requires an attribute when an expectation is given" if assertion[:expectation] and not assertion[:attribute]
+
       unless assertion[:expectation] == assertion[:subject][assertion[:attribute]]
         failed_count += 1
         msg = colorize(:red, "#{failed_count}) Assertion #{assertion[:name]} failed on #{assertion[:subject]}\n")
