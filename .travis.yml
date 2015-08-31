@@ -10,5 +10,17 @@ rvm:
   - 2.0.0
   - 1.9.3
 script:
-  - "rake spec"
-  - "rake acceptance"
+  - bundle exec rake spec
+  - bundle exec rake acceptance
+  - bundle exec puppet module build
+  - "cp pkg/*.tar.gz jordan-spec.tar.gz"
+
+deploy:
+  provider: releases
+  skip_cleanup: true
+  file: jordan-spec.tar.gz
+  on:
+    repo: jolshevski/puppet-spec
+    tags: true
+  api_key:
+    secure: J9M66JNkANXCZ52bG07KMSQvI6S1HnQh1D39eI70MkLmdJ1xfaBK80jcf8wJklv4c2ZBsnI5/JRpUITiRh9r/di9v0BXIbDEYDHQV27u5BpU/0NV3KzFFi2j/PZnY1rY4k3NczoHRAAqlK+oAZtgZZZrtAX8mpDg4sGpw7QXkOEbnvTbNErk05Rg0mb68aONrhjLQLVeERXS6Ij2KF6hl6rzxPCfUjTdUiKv+bCBZb4UUkaTv/vntBYoRA/E6MDKxhpF6vuoZhx8qZe/Xnsn0MfjEs2ojbuLeHgpvz2xc8dUplCeNcIk/2JQ/hRCZyVsZjbC0sxYUjw3GeoGjeopYzhV0YIfMsb7pvxrD6ZMx//HnRH+6YtSoUqZIfXTJfRIuwsWAhbAsjNm4pnJheRFjDCLId52MTDUvwQVjCKaNX2EXdQyIT71mn/JHzJLfO/hbixaikg1OvHtty2rAOLym/7LuNWmgvtitKCAldbwgETc5yPOZNnhMiSfsIkX3JpzQ8Xo7gIN18IhBTKaDCoU6MerCIUYRzxuN8fZifTISgrkf5QA6wUXDL8D/nMnzD/KWGO3D0d/adoKpeEp2cSaSohv7p0e5ines6svnWIxWJu6wrSk0LUC8d9wJP46Pb6LnPieFGBNJF7nI1IyxUORz3L7oYXyOCDXD20vvNz93Q0=
