@@ -72,7 +72,7 @@ class Puppet::Application::Spec < Puppet::Application
     end
 
     footer = "Evaluated #{count} assertion"
-    footer += "s" if count > 1
+    footer += "s" unless count == 1
     msg.push(colorize(:yellow, "#{footer}\n"))
     
     msg.join
