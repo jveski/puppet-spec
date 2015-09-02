@@ -74,7 +74,7 @@ class Puppet::Application::Spec < Puppet::Application
 
       unless assertion[:expectation] == assertion[:subject][assertion[:attribute]]
         failed_count += 1
-        file = File.basename(assertion[:subject].file)
+        file = assertion[:subject].file.split('manifests/').last
 
         msg = colorize(:red, "#{failed_count}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}\n")
         msg += colorize(:yellow, "   └ On line #{assertion[:subject].line} of #{file}\n")
