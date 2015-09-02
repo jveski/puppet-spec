@@ -7,11 +7,19 @@ class Puppet::Application::Spec < Puppet::Application
   include Puppet::Util::Colors
 
   def run_command
+    output = Hash.new
+
     begin
       Puppet::Test::TestHelper.initialize
-      process_spec_directory(specdir)
+      output = process_spec_directory(specdir)
     rescue Exception => e
       print colorize(:red, "#{e.message}\n")
+      exit 1
+    end
+
+    if output[:failed] == 0
+      exit 0
+    else
       exit 1
     end
   end
@@ -20,6 +28,7 @@ class Puppet::Application::Spec < Puppet::Application
     results = Dir.glob("#{specdir}/**/*_spec.pp").map { |spec| process_spec(spec) }.flatten
     output = visit_assertions(results)
     print_results(output)
+    output
   end
 
   def process_spec(path)

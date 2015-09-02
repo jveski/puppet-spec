@@ -4,9 +4,11 @@ require 'puppet/application/spec'
 describe Puppet::Application::Spec do
 
   describe ".run_command" do
+    let(:the_results) {{ :failed => 0 }}
+
     before do
       Puppet::Test::TestHelper.stubs(:initialize)
-      subject.stubs(:process_spec_directory)
+      subject.stubs(:process_spec_directory).returns(the_results)
       subject.stubs(:print)
       subject.stubs(:exit)
       subject.stubs(:specdir).returns(:stub_specdir)
@@ -18,19 +20,30 @@ describe Puppet::Application::Spec do
     end
 
     it "should process the spec directory" do
-      subject.expects(:process_spec_directory).with(:stub_specdir)
+      subject.expects(:process_spec_directory).with(:stub_specdir).returns(the_results)
       subject.run_command
     end
 
     context "when an error is not raised" do
       it "should not print to the console" do
-        subject.run_command
         subject.expects(:print).never
+        subject.run_command
       end
 
-      it "should not exit" do
-        subject.run_command
-        subject.expects(:exit).never
+      context "when the test contains failures" do
+        let(:the_results) {{ :failed => 1 }}
+        it "should exit 1" do
+          subject.expects(:exit).with(1)
+          subject.run_command
+        end
+      end
+
+      context "when the test does not contain failures" do
+        let(:the_results) {{ :failed => 0 }}
+        it "should exit 0" do
+          subject.expects(:exit).with(0)
+          subject.run_command
+        end
       end
     end
 
