@@ -110,7 +110,7 @@ This is where things get cool. There can be a certain amount of discomfort aroun
 In this climate, we can freely make changes to the underlying component modules without worrying about undesirable side effects.
 
 ## Want to pitch in?
-I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to contribute bug fixes or features. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
+I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
 
 ### Roadmap
   * Regex expectations (for long file content and whatnot)
