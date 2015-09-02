@@ -112,12 +112,6 @@ In this climate, we can freely make changes to the underlying component modules 
 ## Want to pitch in?
 I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
 
-### Roadmap
-  * Regex expectations (for long file content and whatnot)
-  * Better type/function documentation (read: type/function documentation)
-  * CLI option for specifying single spec
-  * Allow stubbed classes to receive arbitrary parameters and receive assertions
-
 ### Development Workflow
   * `bundle install`
   * `bundle exec rake spec`
