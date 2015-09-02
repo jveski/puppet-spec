@@ -25,7 +25,7 @@ describe Puppet::Application::Spec do
         expect(subject.visit_assertions(the_assertions)).to eq({
           :count  => 1,
           :failed => 1,
-          :msg    => "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;33m   └ On line 123 of stub file\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n"
+          :msg    => "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;33m  On line 123 of stub file\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n",
         })
       end
     end
@@ -52,7 +52,7 @@ describe Puppet::Application::Spec do
         expect(subject.visit_assertions(the_assertions)).to eq({
           :count  => 1,
           :failed => 1,
-          :msg    => "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;33m   └ On line 12 of stub file again\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n",
+          :msg    => "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;33m  On line 12 of stub file again\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n",
         })
       end
     end

@@ -77,7 +77,7 @@ class Puppet::Application::Spec < Puppet::Application
         file = assertion[:subject].file.split('manifests/').last
 
         msg = colorize(:red, "#{failed_count}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}\n")
-        msg += colorize(:yellow, "   └ On line #{assertion[:subject].line} of #{file}\n")
+        msg += colorize(:yellow, "  On line #{assertion[:subject].line} of #{file}\n")
         msg += colorize(:blue, "  Wanted: ")
         msg += "#{assertion[:attribute]} => '#{assertion[:expectation]}'\n"
         msg += colorize(:blue, "  Got:    ")

@@ -282,7 +282,7 @@ describe Puppet::Application::Spec do
         expect(subject.visit_assertions(the_assertions)).to eq({
           :count  => 2,
           :failed => 2,
-          :msg    => "\e[0;31m1) Assertion stub_name_1 failed on stb2\n\e[0m\e[0;33m   └ On line stub line 1 of stub/1\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_1 => 'stub_expectation_1'\n\e[0;34m  Got:    \e[0mstub_attribute_1 => 'the stub_attribute_1 value'\n\n\e[0;31m2) Assertion stub_name_2 failed on stb1\n\e[0m\e[0;33m   └ On line stub line 2 of stub/2\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the stub_attribute_2 value'\n\n",
+          :msg    => "\e[0;31m1) Assertion stub_name_1 failed on stb2\n\e[0m\e[0;33m  On line stub line 1 of stub/1\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_1 => 'stub_expectation_1'\n\e[0;34m  Got:    \e[0mstub_attribute_1 => 'the stub_attribute_1 value'\n\n\e[0;31m2) Assertion stub_name_2 failed on stb1\n\e[0m\e[0;33m  On line stub line 2 of stub/2\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the stub_attribute_2 value'\n\n",
         })
       end
     end
