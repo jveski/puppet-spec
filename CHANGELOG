@@ -1,0 +1,7 @@
+# Change Log
+
+## [1.0.1] - 2015-09-01
+### Fixed
+- Application now exits 1 if a failed assertion was encountered during spec evaluation.
+
+## [1.0.0] - 2015-08-31
