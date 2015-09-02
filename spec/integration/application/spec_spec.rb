@@ -2,20 +2,6 @@ require 'puppetlabs_spec_helper/module_spec_helper'
 require 'puppet/application/spec'
 
 describe Puppet::Application::Spec do
-  describe ".process_spec_directory" do
-    context "when no specs are found" do
-      before do
-        Dir.stubs(:glob).returns([])
-      end
-
-      it "should print the expected output" do
-        STDOUT.expects(:write).once.with("\n\n")
-        STDOUT.expects(:write).once.with("\e[0;33mEvaluated 0 assertions\n\e[0m")
-        subject.run_command
-      end
-    end
-  end
-
   describe ".visit_assertions" do
     context "with a single passing assertion" do
       let(:the_assertions) {[
@@ -31,9 +17,11 @@ describe Puppet::Application::Spec do
       ]}
 
       it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq(
-          "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n\e[0;33mEvaluated 1 assertion\n\e[0m"
-        )
+        expect(subject.visit_assertions(the_assertions)).to eq({
+          :count  => 1,
+          :failed => 1,
+          :msg    => "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n",
+        })
       end
     end
 
@@ -51,9 +39,11 @@ describe Puppet::Application::Spec do
       ]}
 
       it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq(
-          "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n\e[0;33mEvaluated 1 assertion\n\e[0m"
-        )
+        expect(subject.visit_assertions(the_assertions)).to eq({
+          :count  => 1,
+          :failed => 1,
+          :msg    => "\e[0;31m1) Assertion stub assertion 1 failed on File[/tmp/test]\n\e[0m\e[0;34m  Wanted: \e[0mcontent => 'present'\n\e[0;34m  Got:    \e[0mcontent => ''\n\n",
+        })
       end
     end
 
@@ -104,9 +94,11 @@ describe Puppet::Application::Spec do
       ]}
 
       it "should raise an error" do
-        expect(subject.visit_assertions(the_assertions)).to eq(
-          "\e[0;33mEvaluated 1 assertion\n\e[0m"
-        )
+        expect(subject.visit_assertions(the_assertions)).to eq({
+          :count  => 1,
+          :failed => 0,
+          :msg    => "",
+        })
       end
     end
 

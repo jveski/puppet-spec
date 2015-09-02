@@ -7,19 +7,28 @@ class Puppet::Application::Spec < Puppet::Application
   include Puppet::Util::Colors
 
   def run_command
+    output = Hash.new
+
     begin
       Puppet::Test::TestHelper.initialize
-      process_spec_directory(specdir)
+      output = process_spec_directory(specdir)
     rescue Exception => e
       print colorize(:red, "#{e.message}\n")
+      exit 1
+    end
+
+    if output[:failed] == 0
+      exit 0
+    else
       exit 1
     end
   end
 
   def process_spec_directory(specdir)
     results = Dir.glob("#{specdir}/**/*_spec.pp").map { |spec| process_spec(spec) }.flatten
-    print "\n\n"
-    print visit_assertions(results)
+    output = visit_assertions(results)
+    print_results(output)
+    output
   end
 
   def process_spec(path)
@@ -51,8 +60,8 @@ class Puppet::Application::Spec < Puppet::Application
     catalog
   end
 
-  # Return a string that contains
-  # output to be displayed to the
+  # Return a hash that contains
+  # data to be displayed to the
   # user which represents the results
   # of the assertions.
   def visit_assertions(assertions)
@@ -73,11 +82,26 @@ class Puppet::Application::Spec < Puppet::Application
       end
     end
 
-    footer = "Evaluated #{count} assertion"
-    footer += "s" unless count == 1
-    msg.push(colorize(:yellow, "#{footer}\n"))
-    
-    msg.join
+    {
+      :msg    => msg.join,
+      :count  => count,
+      :failed => failed_count,
+    }
+  end
+
+  # Given the resulting hash
+  # from .visit_assertions,
+  # present the output to the
+  # user.
+  def print_results(results)
+    print "\n\n"
+    print results[:msg] if results[:msg]
+
+    if results[:count] == 1
+      print colorize(:yellow, "Evaluated #{results[:count]} assertion\n")
+    else
+      print colorize(:yellow, "Evaluated #{results[:count]} assertions\n")
+    end
   end
 
   # Validate assertion raises an error
