@@ -258,29 +258,31 @@ describe Puppet::Application::Spec do
     end
 
     context "when given one passing and one failing assertion" do
+      let(:the_subject1) { stub(:file => 'stub file 1', :line => 'stub line 1', :to_s => 'stb2') }
+      let(:the_subject2) { stub(:file => 'stub file 2', :line => 'stub line 2', :to_s => 'stb1') }
       let(:the_assertions) {[
         {
           :expectation => 'stub_expectation_1',
           :attribute   => 'stub_attribute_1',
           :name        => 'stub_name_1',
-          :subject     => {
-            'stub_attribute_1' => 'stub_expectation_1',
-          },
+          :subject     => the_subject1
         },
         {
           :expectation => 'stub_expectation_2',
           :attribute   => 'stub_attribute_2',
           :name        => 'stub_name_2',
-          :subject     => {
-            'stub_attribute_2' => 'not the expectation',
-          },
+          :subject     => the_subject2
         }
       ]}
+      before do
+        the_subject1.stubs(:[]).with('stub_attribute_1').returns('the stub_attribute_1 value')
+        the_subject2.stubs(:[]).with('stub_attribute_2').returns('not the stub_attribute_2 value')
+      end
       it "should return the expected output" do
         expect(subject.visit_assertions(the_assertions)).to eq({
-          :count => 2,
-          :failed => 1,
-          :msg => "\e[0;31m1) Assertion stub_name_2 failed on {\"stub_attribute_2\"=>\"not the expectation\"}\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the expectation'\n\n",
+          :count  => 2,
+          :failed => 2,
+          :msg    => "\e[0;31m1) Assertion stub_name_1 failed on stb2\n\e[0m\e[0;33m   └ On line stub line 1 of stub file 1\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_1 => 'stub_expectation_1'\n\e[0;34m  Got:    \e[0mstub_attribute_1 => 'the stub_attribute_1 value'\n\n\e[0;31m2) Assertion stub_name_2 failed on stb1\n\e[0m\e[0;33m   └ On line stub line 2 of stub file 2\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the stub_attribute_2 value'\n\n",
         })
       end
     end
