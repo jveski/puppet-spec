@@ -10,7 +10,8 @@ rvm:
   - 2.0.0
   - 1.9.3
 script:
-  - bundle exec rake spec acceptance
+  - bundle exec rake spec
+  - bundle exec rake acceptance
   - bundle exec puppet module build
   - "cp pkg/*.tar.gz jordan-spec.tar.gz"
 
