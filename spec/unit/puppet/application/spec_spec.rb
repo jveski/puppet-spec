@@ -62,7 +62,7 @@ describe Puppet::Application::Spec do
       subject.stubs(:process_spec).with(:stub_spec2).returns(:stub_result2)
       subject.stubs(:process_spec).with(:stub_spec3).returns([:stub_result3])
       subject.stubs(:visit_assertions).returns(:stub_results)
-      subject.stubs(:print)
+      subject.stubs(:print_results)
       Dir.stubs(:glob).returns(the_files)
     end
 
@@ -86,8 +86,7 @@ describe Puppet::Application::Spec do
     end
 
     it "should print the results" do
-      subject.expects(:print).once.with("\n\n")
-      subject.expects(:print).once.with(:stub_results)
+      subject.expects(:print_results).once.with(:stub_results)
       subject.process_spec_directory('stub_path')
     end
   end
@@ -205,9 +204,11 @@ describe Puppet::Application::Spec do
         }
       ]}
       it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq(
-          "\e[0;33mEvaluated 1 assertion\n\e[0m"
-        )
+        expect(subject.visit_assertions(the_assertions)).to eq({
+          :count  => 1,
+          :failed => 0,
+          :msg    => "",
+        })
       end
     end
 
@@ -231,9 +232,11 @@ describe Puppet::Application::Spec do
         }
       ]}
       it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq(
-          "\e[0;33mEvaluated 2 assertions\n\e[0m"
-        )
+        expect(subject.visit_assertions(the_assertions)).to eq({
+          :count  => 2,
+          :failed => 0,
+          :msg    => "",
+        })
       end
       it "should validate each assertion" do
         subject.expects(:validate_assertion).with(the_assertions[0])
@@ -261,9 +264,11 @@ describe Puppet::Application::Spec do
         }
       ]}
       it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq(
-          "\e[0;31m1) Assertion stub_name_2 failed on {\"stub_attribute_2\"=>\"not the expectation\"}\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the expectation'\n\n\e[0;33mEvaluated 2 assertions\n\e[0m"
-        )
+        expect(subject.visit_assertions(the_assertions)).to eq({
+          :count => 2,
+          :failed => 1,
+          :msg => "\e[0;31m1) Assertion stub_name_2 failed on {\"stub_attribute_2\"=>\"not the expectation\"}\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the expectation'\n\n",
+        })
       end
     end
   end
@@ -296,6 +301,71 @@ describe Puppet::Application::Spec do
         expect{subject.validate_assertion(the_assertion)}.to_not raise_error
       end
     end
+  end
+
+  describe ".print_results" do
+    let(:the_results) {{}}
+
+    before do
+      subject.stubs(:print)
+    end
+
+    it "should print two newlines" do
+      subject.expects(:print).once.with("\n\n")
+      subject.print_results(the_results)
+    end
+
+    context "when given a hash with a message" do
+      let(:the_results) {{
+        :msg => "stub message",
+      }}
+
+      it "should print the message" do
+        subject.expects(:print).once.with("stub message")
+        subject.print_results(the_results)
+      end
+    end
+
+    context "when given a hash with no message" do
+      it "should not print the message" do
+        subject.expects(:print).once.with("stub message").never
+        subject.print_results(the_results)
+      end
+    end
+
+    context "when given a hash with one resource" do
+      let(:the_results) {{
+        :count => 1
+      }}
+
+      it "should print a singular footer message" do
+        subject.expects(:print).with("\e[0;33mEvaluated 1 assertion\n\e[0m")
+        subject.print_results(the_results)
+      end
+    end
+
+    context "when given a hash with two resources" do
+      let(:the_results) {{
+        :count => 2
+      }}
+
+      it "should print a plural footer message" do
+        subject.expects(:print).with("\e[0;33mEvaluated 2 assertions\n\e[0m")
+        subject.print_results(the_results)
+      end
+    end
+
+    context "when given a hash with no resources" do
+      let(:the_results) {{
+        :count => 0
+      }}
+
+      it "should print a plural footer message" do
+        subject.expects(:print).with("\e[0;33mEvaluated 0 assertions\n\e[0m")
+        subject.print_results(the_results)
+      end
+    end
+
   end
 
   describe ".notify_compiled" do
