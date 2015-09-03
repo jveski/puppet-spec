@@ -35,12 +35,3 @@ deploy:
       branch: master
     api_key:
       secure: cEPat4fEsy7U48U7XXgZhJYoVVt/0r5N3eyGvrcvLPryCmtDAQdrfEH/2F8H1xT4TJEh3RNZs3caOAjNDZMD/IJ6gBeFnUi/8pR9p1qfuOc+XZaNVE07e6xuMPLaFxkKaIx1iUDvDmodeTGLtt3PuQismdDd1BjoBpunzRQbbaDfxPq0tz8TQWRGuQYcQ0xiwPfkNidHrMaUumU8nLcLcNljqQ9kEm1aQ/ZOli6nnneknZ3Yign7l9UcfSOkpDFIGSdpnIHpzWcBYaMLgvExaTFwMBrYkG6Fcr9f+4TKTYBP7f3Iq4hJMwUiPY17sdKXrZwgLB7bWsZCrzo36/u+Pewuo01Y3pZ9ZnFUgiSfDQFgg7bfXX6jPlZVwOom3Dri0QOdPvbbRQFYnye/i7GQZzeqjIYVbki+hhCjN9e6BTtTqrRTDGQ/6jirEJY6G6Vge8lnzUR0b3TPygJzvu4mwuxfpBRwRB7dEqR5vMtLuCazFfGTRnctElsxA0LdbuekjkRkyzKi6vxY6nMiCv4zjQioxm1oxhSQG+4elSBHFV6E8IqaqsZow6WZvYpuTI0m6GzALOkbrb/rrKrgPYIMxAYraY/9kpY0VF9sk0cgzO1rNtghyr5ly+tUpfSskiil5Bn2BdrWMymfknDe0GxL3q/ZOoLoOHn+1e8aunTPtOE=
-  - provider: puppetforge
-    skip_cleanup: true
-    username: jordan
-    on:
-      tags: true
-      repo: jolshevski/puppet-spec
-      branch: master
-    password:
-      secure: "YO3ZX/+vbyI5m5/so6BeP7GwvmUC7zgeU/ehIxI1aHzSMdglKYVlSdVVI5zQhDVgqhWy4+TwaOmKw9LaAdVF1xmsctdej8R0CQVNXD+rDne8jC3TEUL6zelrrOaHDWLD59Igg76Ki4E94FYk9cvbEP1/Kq9ECSORqfqSvIUGQJegIhFbP9fvJPeiS2gx2lH0sl8aH5WuzKuEQRMJoZgbt8he07j1lNVZxW7DWiRkXsCC4Czk/0cXYsvV4AqiTxhJIOGHyqVQB/WdKcEpyZDScdG2gmYjmDP+4EzPeh6GHvqhpBoN6sVCctR0lOoiXSaJBOtB+FMddTgDZRxQZzvsaugq5V+XZmB+C6qpGP4iMZzx1CWdKkbUF6d4t9iYNDQm9+bZl+LbzUaQfAAaJXj1V0d1JjDA2vPl5ecZCsdYqlPrWj+UiNVQZ31U2AGlOZ0fyHA/sa4O4N65HNcRwJ6pTas5Rxg3B3UgM0AjEEhuZwuSoCCCpBfHE7DC4Nm9axrmB4mbcF+BoLG9dg6LK+rm+9TZH0NPY7roZIsROxQI95ao5jlh6BvyYekaRqJUhG+b/LzlxIIVWv/6rqnFdmijJ3SI3nbZGXGzzWfKLOLMxJAxFWGR++7ckHM7YoAtGSsaJUOviqPq44yT3zx1tTwlsquqIEFW8DPL15ITqYNmfMc="

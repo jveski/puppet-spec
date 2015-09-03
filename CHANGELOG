@@ -1,7 +1,6 @@
 ## 2015-09-03 - 1.0.2
 #### Improvements
 - Issue #12 - Gem / Rake tasks
-- Issue #9 - Automatic forge publishing
 - Issue #2 - Output file and line number of the failed assertion's subject
 
 ## 2015-09-01 - 1.0.1
