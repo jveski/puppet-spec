@@ -10,16 +10,28 @@ rvm:
   - 2.0.0
   - 1.9.3
 script:
-  - bundle exec rake spec acceptance
+  - bundle exec rake spec
+  - bundle exec rake acceptance
   - bundle exec puppet module build
-  - "cp pkg/*.tar.gz jordan-spec.tar.gz"
-
+  - bundle exec gem build .gemspec
+  - cp pkg/*.tar.gz jordan-spec.tar.gz
 deploy:
-  provider: releases
-  skip_cleanup: true
-  file: jordan-spec.tar.gz
-  on:
-    repo: jolshevski/puppet-spec
-    tags: true
-  api_key:
-    secure: J9M66JNkANXCZ52bG07KMSQvI6S1HnQh1D39eI70MkLmdJ1xfaBK80jcf8wJklv4c2ZBsnI5/JRpUITiRh9r/di9v0BXIbDEYDHQV27u5BpU/0NV3KzFFi2j/PZnY1rY4k3NczoHRAAqlK+oAZtgZZZrtAX8mpDg4sGpw7QXkOEbnvTbNErk05Rg0mb68aONrhjLQLVeERXS6Ij2KF6hl6rzxPCfUjTdUiKv+bCBZb4UUkaTv/vntBYoRA/E6MDKxhpF6vuoZhx8qZe/Xnsn0MfjEs2ojbuLeHgpvz2xc8dUplCeNcIk/2JQ/hRCZyVsZjbC0sxYUjw3GeoGjeopYzhV0YIfMsb7pvxrD6ZMx//HnRH+6YtSoUqZIfXTJfRIuwsWAhbAsjNm4pnJheRFjDCLId52MTDUvwQVjCKaNX2EXdQyIT71mn/JHzJLfO/hbixaikg1OvHtty2rAOLym/7LuNWmgvtitKCAldbwgETc5yPOZNnhMiSfsIkX3JpzQ8Xo7gIN18IhBTKaDCoU6MerCIUYRzxuN8fZifTISgrkf5QA6wUXDL8D/nMnzD/KWGO3D0d/adoKpeEp2cSaSohv7p0e5ines6svnWIxWJu6wrSk0LUC8d9wJP46Pb6LnPieFGBNJF7nI1IyxUORz3L7oYXyOCDXD20vvNz93Q0=
+  - provider: releases
+    skip_cleanup: true
+    file: jordan-spec.tar.gz
+    on:
+      tags: true
+      repo: jolshevski/puppet-spec
+      branch: master
+    api_key:
+      secure: J9M66JNkANXCZ52bG07KMSQvI6S1HnQh1D39eI70MkLmdJ1xfaBK80jcf8wJklv4c2ZBsnI5/JRpUITiRh9r/di9v0BXIbDEYDHQV27u5BpU/0NV3KzFFi2j/PZnY1rY4k3NczoHRAAqlK+oAZtgZZZrtAX8mpDg4sGpw7QXkOEbnvTbNErk05Rg0mb68aONrhjLQLVeERXS6Ij2KF6hl6rzxPCfUjTdUiKv+bCBZb4UUkaTv/vntBYoRA/E6MDKxhpF6vuoZhx8qZe/Xnsn0MfjEs2ojbuLeHgpvz2xc8dUplCeNcIk/2JQ/hRCZyVsZjbC0sxYUjw3GeoGjeopYzhV0YIfMsb7pvxrD6ZMx//HnRH+6YtSoUqZIfXTJfRIuwsWAhbAsjNm4pnJheRFjDCLId52MTDUvwQVjCKaNX2EXdQyIT71mn/JHzJLfO/hbixaikg1OvHtty2rAOLym/7LuNWmgvtitKCAldbwgETc5yPOZNnhMiSfsIkX3JpzQ8Xo7gIN18IhBTKaDCoU6MerCIUYRzxuN8fZifTISgrkf5QA6wUXDL8D/nMnzD/KWGO3D0d/adoKpeEp2cSaSohv7p0e5ines6svnWIxWJu6wrSk0LUC8d9wJP46Pb6LnPieFGBNJF7nI1IyxUORz3L7oYXyOCDXD20vvNz93Q0=
+  - provider: rubygems
+    skip_cleanup: true
+    gem: puppet-spec
+    gemspec: .gemspec
+    on:
+      tags: true
+      repo: jolshevski/puppet-spec
+      branch: master
+    api_key:
+      secure: cEPat4fEsy7U48U7XXgZhJYoVVt/0r5N3eyGvrcvLPryCmtDAQdrfEH/2F8H1xT4TJEh3RNZs3caOAjNDZMD/IJ6gBeFnUi/8pR9p1qfuOc+XZaNVE07e6xuMPLaFxkKaIx1iUDvDmodeTGLtt3PuQismdDd1BjoBpunzRQbbaDfxPq0tz8TQWRGuQYcQ0xiwPfkNidHrMaUumU8nLcLcNljqQ9kEm1aQ/ZOli6nnneknZ3Yign7l9UcfSOkpDFIGSdpnIHpzWcBYaMLgvExaTFwMBrYkG6Fcr9f+4TKTYBP7f3Iq4hJMwUiPY17sdKXrZwgLB7bWsZCrzo36/u+Pewuo01Y3pZ9ZnFUgiSfDQFgg7bfXX6jPlZVwOom3Dri0QOdPvbbRQFYnye/i7GQZzeqjIYVbki+hhCjN9e6BTtTqrRTDGQ/6jirEJY6G6Vge8lnzUR0b3TPygJzvu4mwuxfpBRwRB7dEqR5vMtLuCazFfGTRnctElsxA0LdbuekjkRkyzKi6vxY6nMiCv4zjQioxm1oxhSQG+4elSBHFV6E8IqaqsZow6WZvYpuTI0m6GzALOkbrb/rrKrgPYIMxAYraY/9kpY0VF9sk0cgzO1rNtghyr5ly+tUpfSskiil5Bn2BdrWMymfknDe0GxL3q/ZOoLoOHn+1e8aunTPtOE=
