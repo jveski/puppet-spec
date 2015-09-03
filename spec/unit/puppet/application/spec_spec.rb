@@ -3,12 +3,20 @@ require 'puppet/application/spec'
 
 describe Puppet::Application::Spec do
 
+  describe ".handle_manifest" do
+    it "should set the manifest configuration" do
+      subject.handle_manifest(:stub_manifest)
+      expect(subject.options[:manifest]).to eq(:stub_manifest)
+    end
+  end
+
   describe ".run_command" do
     let(:the_results) {{ :failed => 0 }}
 
     before do
       Puppet::Test::TestHelper.stubs(:initialize)
       subject.stubs(:process_spec_directory).returns(the_results)
+      subject.stubs(:process_spec).returns(the_results)
       subject.stubs(:print)
       subject.stubs(:exit)
       subject.stubs(:specdir).returns(:stub_specdir)
@@ -19,9 +27,21 @@ describe Puppet::Application::Spec do
       subject.run_command
     end
 
-    it "should process the spec directory" do
-      subject.expects(:process_spec_directory).with(:stub_specdir).returns(the_results)
-      subject.run_command
+    context "when the manifest has not been configured" do
+      it "should process the spec directory" do
+        subject.expects(:process_spec_directory).with(:stub_specdir).returns(the_results)
+        subject.run_command
+      end
+    end
+
+    context "when the manifest been configured" do
+      before { subject.send(:handle_manifest, :stub_manifest) }
+
+      it "should not process the spec directory" do
+        puts subject.options
+        subject.expects(:process_spec).with(:stub_manifest).returns(the_results)
+        subject.run_command
+      end
     end
 
     context "when an error is not raised" do

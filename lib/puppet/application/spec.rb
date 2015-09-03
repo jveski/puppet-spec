@@ -6,12 +6,18 @@ require 'fileutils'
 class Puppet::Application::Spec < Puppet::Application
   include Puppet::Util::Colors
 
+  option("--manifest manifest",  "-m manifest")
+
   def run_command
     output = Hash.new
 
     begin
       Puppet::Test::TestHelper.initialize
-      output = process_spec_directory(specdir)
+      if options[:manifest]
+        output = process_spec(options[:manifest])
+      else
+        output = process_spec_directory(specdir)
+      end
     rescue Exception => e
       print colorize(:red, "#{e.message}\n")
       exit 1
