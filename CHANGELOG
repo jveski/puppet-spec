@@ -1,7 +1,11 @@
-# Change Log
+## 2015-09-03 - 1.0.2
+#### Improvements
+- Issue #12 - Gem / Rake tasks
+- Issue #9 - Automatic forge publishing
+- Issue #2 - Output file and line number of the failed assertion's subject
 
-## [1.0.1] - 2015-09-01
-### Fixed
-- Application now exits 1 if a failed assertion was encountered during spec evaluation.
+## 2015-09-01 - 1.0.1
+#### Fixes
+- Issue #1 - Application now exits 1 if a failed assertion was encountered during spec evaluation.
 
-## [1.0.0] - 2015-08-31
+## 2015-08-31 - 1.0.0
