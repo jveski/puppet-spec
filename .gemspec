@@ -1,6 +1,8 @@
+require 'json'
+
 Gem::Specification.new do |s|
   s.name                  = 'puppet-spec'
-  s.version               = '1.0.0'
+  s.version               = JSON.load(File.read('./metadata.json'))["version"]
   s.license               = 'Apache-2.0'
   s.platform              = Gem::Platform::RUBY
   s.homepage              = 'http://github.com/jolshevski/puppet-spec'
