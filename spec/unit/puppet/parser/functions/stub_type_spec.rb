@@ -10,7 +10,7 @@ describe "the stub_type function" do
 
   before do
     the_compiler.stubs(:environment).returns(the_environment)
-    Puppet::Resource::Type::Stub.stubs(:new).returns(:stub_type)
+    Puppet::Util::Stubs::Type.stubs(:new).returns(:stub_type)
   end
 
   context "when given a hash" do
@@ -23,24 +23,13 @@ describe "the stub_type function" do
 
   context "when given string" do
     it "should instantiate a stub type" do
-      Puppet::Resource::Type::Stub.expects(:new).with(:definition, "stub type name")
+      Puppet::Util::Stubs::Type.expects(:new).with(:definition, "stub type name")
       the_scope.function_stub_type(["stub type name"])
     end
 
     it "should append the type stub to the environment's known resource types" do
       the_resource_types.expects(:<<).with(:stub_type)
       the_scope.function_stub_type(["stub class name"])
-    end
-  end
-
-end
-
-describe Puppet::Resource::Type::Stub do
-  subject { Puppet::Resource::Type::Stub.new(:definition, 'stub resource') }
-
-  describe ".valid_parameter?" do
-    it "should return true" do
-      expect(subject.valid_parameter?('anything')).to be true
     end
   end
 
