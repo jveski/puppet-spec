@@ -1,6 +1,9 @@
 class acceptance {
 
-  include another::class
+  class { 'another::class':
+    param        => "value",
+    lkjsdflkjsdf => "123",
+  }
 
   package { 'the package':
     ensure   => $another,
