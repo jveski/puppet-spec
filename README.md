@@ -95,7 +95,7 @@ For examples, check out the acceptance test suite.
 Stub_facts takes a hash of fact/value pairs, and... stubs them. Technically it just defines top scope variables, but stub_top_scope_variables() doesn't quite roll off the tongue.
 
 #### stub_class('')
-Stub_class stubs a given class. It will accept no params (it's on the way, PR maybe?), and contains no resources. Classes can be namespaced as expected with the scope indicator.
+Stub_class stubs a given class. The stubbed class will accept values for any param. Classes can be namespaced as expected with the scope indicator.
 
 #### stub_type('')
 Stub_type stubs a defined type. Any parameters will be accepted and can be asserted upon. Like the stub_class function, the type name can be namespaced as you would expect.

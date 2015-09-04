@@ -31,6 +31,12 @@ assertion { 'the class containing all the other stuff should be included':
   subject => Class['another::class'],
 }
 
+assertion { 'the class should have a gibberish attribute':
+  subject     => Class['another::class'],
+  attribute   => 'lkjsdflkjsdf',
+  expectation => '123',
+}
+
 assertion { 'the other thing is around':
   subject     => Another::Type['the other thing'],
   attribute   => 'ensure',
