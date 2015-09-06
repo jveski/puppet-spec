@@ -309,23 +309,6 @@ describe Puppet::Application::Spec do
   end
 
   describe ".validate_assertion" do
-    context "when given a subject, expectation, and no attribute" do
-      let(:the_assertion) { {:subject => true, :expectation => true, :attribute => nil} }
-
-      it "should raise an error" do
-        expect{subject.validate_assertion(the_assertion)}.to raise_error(
-          '{:subject=>true, :expectation=>true, :attribute=>nil} requires an attribute when an expectation is given'
-        )
-      end
-    end
-
-    context "when given a subject, expectation, and attribute" do
-      let(:the_assertion) { {:subject => true, :expectation => true, :attribute => true } }
-
-      it "should raise an error" do
-        expect{subject.validate_assertion(the_assertion)}.to_not raise_error
-      end
-    end
   end
 
   describe ".print_results" do

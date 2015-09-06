@@ -33,6 +33,22 @@ describe Puppet::Type.type(:assertion) do
         )
       end
     end
+
+    context "when given an expectation and no attribute" do
+      subject do
+        Puppet::Type.type(:assertion).new(
+          :name        => :stub_name,
+          :expectation => :stub_expectation,
+          :subject     => Puppet::Resource.new(:stub_type, :stub_subject),
+        )
+      end
+
+      it "should raise an error" do
+        expect{subject.validate}.to raise_error(
+          'Validation of Assertion[stub_name] failed: an attribute is required when an expectation is given'
+        )
+      end
+    end
   end
 end
 

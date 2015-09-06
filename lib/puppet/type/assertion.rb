@@ -8,6 +8,7 @@ Puppet::Type.newtype(:assertion) do
 
   validate do
     fail Puppet::Error, "a subject is required" unless @parameters[:subject]
+    fail Puppet::Error, "an attribute is required when an expectation is given" if @parameters[:expectation] and not @parameters[:attribute]
   end
 
   newparam(:name) do

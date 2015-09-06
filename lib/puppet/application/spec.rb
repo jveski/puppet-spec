@@ -118,7 +118,6 @@ class Puppet::Application::Spec < Puppet::Application
   # a subject, or if it contains a
   # expectation without attribute.
   def validate_assertion(assertion)
-    raise Puppet::Error, "#{assertion} requires an attribute when an expectation is given" if assertion[:expectation] and not assertion[:attribute]
   end
 
   # Print an rspec style dot

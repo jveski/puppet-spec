@@ -87,7 +87,7 @@ describe Puppet::Application::Spec do
 
       it "should raise an error" do
         expect{subject.visit_assertions(the_assertions)}.to raise_error(
-          'Assertion[stub assertion 1] requires an attribute when an expectation is given'
+          'Validation of Assertion[stub assertion 1] failed: an attribute is required when an expectation is given'
         )
       end
     end
