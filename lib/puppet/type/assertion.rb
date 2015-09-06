@@ -6,6 +6,10 @@ Puppet::Type.newtype(:assertion) do
   spec application.
   "
 
+  validate do
+    fail Puppet::Error, "a subject is required" unless @parameters[:subject]
+  end
+
   newparam(:name) do
     desc "A plain text message describing what the assertion is intended to prove.
 
