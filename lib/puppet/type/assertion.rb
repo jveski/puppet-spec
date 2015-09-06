@@ -21,17 +21,12 @@ Puppet::Type.newtype(:assertion) do
     "
 
     validate do |value|
-      fail Puppet::Error, "You must provide an assertion subject" unless value
       fail Puppet::Error, "Attributes must be a resource reference" unless value.is_a? Puppet::Resource
     end
   end
 
   newparam(:attribute) do
     desc "An attribute of the subject resource to assert against"
-
-    validate do |value|
-      fail Puppet::Error, "You must provide attribute to be asserted" unless value
-    end
   end
 
   newparam(:expectation) do
