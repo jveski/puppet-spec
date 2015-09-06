@@ -222,7 +222,6 @@ describe Puppet::Application::Spec do
 
   describe ".visit_assertions" do
     before do
-      subject.stubs(:validate_assertion)
     end
 
     context "when given one passing assertion" do
@@ -271,10 +270,6 @@ describe Puppet::Application::Spec do
           :msg    => "",
         })
       end
-      it "should validate each assertion" do
-        subject.expects(:validate_assertion).with(the_assertions[0])
-        subject.visit_assertions(the_assertions)
-      end
     end
 
     context "when given one passing and one failing assertion" do
@@ -306,9 +301,6 @@ describe Puppet::Application::Spec do
         })
       end
     end
-  end
-
-  describe ".validate_assertion" do
   end
 
   describe ".print_results" do

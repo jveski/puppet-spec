@@ -76,7 +76,6 @@ class Puppet::Application::Spec < Puppet::Application
 
     msg = assertions.map do |assertion|
       count += 1
-      validate_assertion(assertion)
 
       unless assertion[:expectation] == assertion[:subject][assertion[:attribute]]
         failed_count += 1
@@ -111,13 +110,6 @@ class Puppet::Application::Spec < Puppet::Application
     else
       print colorize(:yellow, "Evaluated #{results[:count]} assertions\n")
     end
-  end
-
-  # Validate assertion raises an error
-  # if the assertion does not contain
-  # a subject, or if it contains a
-  # expectation without attribute.
-  def validate_assertion(assertion)
   end
 
   # Print an rspec style dot
