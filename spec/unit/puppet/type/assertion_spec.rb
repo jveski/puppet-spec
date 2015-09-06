@@ -9,7 +9,7 @@ describe Puppet::Type::Assertion::ParameterSubject do
     context "when given a string" do
       it "should raise an error" do
         expect{subject.validate('test')}.to raise_error(
-          'Attributes must be a resource reference'
+          'Subject must be a resource reference'
         )
       end
     end
@@ -17,7 +17,7 @@ describe Puppet::Type::Assertion::ParameterSubject do
     context "when given a hash" do
       it "should raise an error" do
         expect{subject.validate({:key => :value})}.to raise_error(
-          'Attributes must be a resource reference'
+          'Subject must be a resource reference'
         )
       end
     end

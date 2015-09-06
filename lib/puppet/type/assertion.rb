@@ -21,7 +21,7 @@ Puppet::Type.newtype(:assertion) do
     "
 
     validate do |value|
-      fail Puppet::Error, "Attributes must be a resource reference" unless value.is_a? Puppet::Resource
+      fail Puppet::Error, "Subject must be a resource reference" unless value.is_a? Puppet::Resource
     end
   end
 
