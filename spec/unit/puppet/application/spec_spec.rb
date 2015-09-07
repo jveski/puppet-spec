@@ -335,7 +335,7 @@ describe Puppet::Application::Spec do
 
       it "should raise an error" do
         expect{subject.specdir}.to raise_error(
-          'No spec directory was found under the CWD. You can optionally specifiy one with --specdir'
+          'No spec directory was found under the CWD. A spec manifest can be specified with the --manifest flag'
         )
       end
     end

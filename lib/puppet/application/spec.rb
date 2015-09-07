@@ -94,7 +94,7 @@ class Puppet::Application::Spec < Puppet::Application
     pwd = Dir.pwd
     specdir = File.join(pwd, 'spec')
     unless Dir.exist?(specdir)
-      raise 'No spec directory was found under the CWD. You can optionally specifiy one with --specdir'
+      raise 'No spec directory was found under the CWD. A spec manifest can be specified with the --manifest flag'
     end
     specdir
   end
