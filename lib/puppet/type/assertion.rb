@@ -6,6 +6,12 @@ Puppet::Type.newtype(:assertion) do
   spec application.
   "
 
+  validate do
+    fail Puppet::Error, "a subject is required" unless @parameters[:subject]
+    fail Puppet::Error, "an attribute is required when an expectation is given" if @parameters[:expectation] and not @parameters[:attribute]
+    fail Puppet::Error, "an expectation is required when an attribute is given" if @parameters[:attribute] and not @parameters[:expectation]
+  end
+
   newparam(:name) do
     desc "A plain text message describing what the assertion is intended to prove.
 
@@ -21,17 +27,12 @@ Puppet::Type.newtype(:assertion) do
     "
 
     validate do |value|
-      fail Puppet::Error, "You must provide an assertion subject" unless value
-      fail Puppet::Error, "Attributes must be a resource reference" unless value.is_a? Puppet::Resource
+      fail Puppet::Error, "Subject must be a resource reference" unless value.is_a? Puppet::Resource
     end
   end
 
   newparam(:attribute) do
     desc "An attribute of the subject resource to assert against"
-
-    validate do |value|
-      fail Puppet::Error, "You must provide attribute to be asserted" unless value
-    end
   end
 
   newparam(:expectation) do

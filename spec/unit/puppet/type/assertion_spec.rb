@@ -1,31 +1,70 @@
 require 'puppetlabs_spec_helper/module_spec_helper'
 require 'puppet/type/assertion'
 
-describe Puppet::Type::Assertion::ParameterAttribute do
-  let(:the_resource) { stub }
-  let(:the_subject) { stub }
-  subject { Puppet::Type::Assertion::ParameterAttribute.new(:resource => the_resource) }
+describe Puppet::Type.type(:assertion) do
+  describe "validate" do
+    context "when given a attribute, expectation, and subject" do
+      subject do
+        Puppet::Type.type(:assertion).new(
+          :name        => :stub_name,
+          :attribute   => :stub_attribute,
+          :expectation => :stub_expectation,
+          :subject     => Puppet::Resource.new(:stub_type, :stub_subject),
+        )
+      end
 
-  describe ".validate" do
-    before do
-      the_resource.stubs(:[]).returns(the_subject)
+      it "should not raise an error" do
+        expect{subject.validate}.to_not raise_error
+      end
     end
 
-    context "when not given a value" do
+    context "when given a attribute and expectation" do
+      subject do
+        Puppet::Type.type(:assertion).new(
+          :name        => :stub_name,
+          :attribute   => :stub_attribute,
+          :expectation => :stub_expectation,
+        )
+      end
+
       it "should raise an error" do
-        expect{subject.validate(nil)}.to raise_error(
-          'You must provide attribute to be asserted'
+        expect{subject.validate}.to raise_error(
+          'Validation of Assertion[stub_name] failed: a subject is required'
         )
       end
     end
 
-    context "when given a valid parameter" do
-      let(:the_subject) { stub(:valid_parameter? => true) }
-      it "should not raise an error" do
-        expect{subject.validate('stub attribute')}.to_not raise_error
+    context "when given an attribute and no expectation" do
+      subject do
+        Puppet::Type.type(:assertion).new(
+          :name        => :stub_name,
+          :attribute   => :stub_attribute,
+          :subject     => Puppet::Resource.new(:stub_type, :stub_subject),
+        )
+      end
+
+      it "should raise an error" do
+        expect{subject.validate}.to raise_error(
+          'Validation of Assertion[stub_name] failed: an expectation is required when an attribute is given'
+        )
       end
     end
 
+    context "when given an expectation and no attribute" do
+      subject do
+        Puppet::Type.type(:assertion).new(
+          :name        => :stub_name,
+          :expectation => :stub_expectation,
+          :subject     => Puppet::Resource.new(:stub_type, :stub_subject),
+        )
+      end
+
+      it "should raise an error" do
+        expect{subject.validate}.to raise_error(
+          'Validation of Assertion[stub_name] failed: an attribute is required when an expectation is given'
+        )
+      end
+    end
   end
 end
 
@@ -34,18 +73,18 @@ describe Puppet::Type::Assertion::ParameterSubject do
   subject { Puppet::Type::Assertion::ParameterSubject.new(:resource => the_resource) }
 
   describe ".validate" do
-    context "when not given a value" do
+    context "when given a string" do
       it "should raise an error" do
-        expect{subject.validate(nil)}.to raise_error(
-          'You must provide an assertion subject'
+        expect{subject.validate('test')}.to raise_error(
+          'Subject must be a resource reference'
         )
       end
     end
 
-    context "when given a string" do
+    context "when given a hash" do
       it "should raise an error" do
-        expect{subject.validate('test')}.to raise_error(
-          'Attributes must be a resource reference'
+        expect{subject.validate({:key => :value})}.to raise_error(
+          'Subject must be a resource reference'
         )
       end
     end
