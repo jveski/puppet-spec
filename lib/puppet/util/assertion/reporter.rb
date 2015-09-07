@@ -25,6 +25,11 @@ module Puppet::Util
 
       # Pretty print the results of an assertion to the console
       def report(assertion)
+        # Shim the value of failed into the
+        # local scope in order to access it
+        # from the style proc.
+        failed = @failed
+
         style do
           red      "#{failed}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}"
           newline
