@@ -23,6 +23,20 @@ module Puppet::Util
         end
       end
 
+      # Print the summary of evaluated assertions
+      def print_footer
+        # Shim the reporter into the local scope
+        reporter = self
+
+        style do
+          if reporter.evaluated == 1
+            yellow "Evaluated 1 assertion\n"
+          else
+            yellow "Evaluated #{reporter.evaluated} assertions\n"
+          end
+        end
+      end
+
       # Pretty print the results of an assertion to the console
       def report(assertion)
         # Shim the value of failed into the

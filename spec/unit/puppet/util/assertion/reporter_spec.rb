@@ -70,9 +70,16 @@ describe Puppet::Util::Assertion::Reporter do
     end
   end
 
+  describe ".print_footer" do
+    it "should print the stylized footer" do
+      subject.expects(:style)
+      subject.print_footer
+    end
+  end
+
   describe ".report" do
     it "should print the stylized assertion results" do
-      subject.expects(:style).returns(:stub_string)
+      subject.expects(:style)
       subject.report(:stub_resource)
     end
   end
