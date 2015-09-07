@@ -72,6 +72,7 @@ describe Puppet::Util::Assertion::Printer::Styler do
 
     before do
       Puppet::Util::Assertion::Printer.stubs(:new).returns(the_printer)
+      subject.stubs(:print)
     end
 
     it "should instantiate a printer" do
@@ -84,8 +85,9 @@ describe Puppet::Util::Assertion::Printer::Styler do
       subject.style
     end
 
-    it "should return the printer's string" do
-      expect(subject.style).to eq(:stub_output)
+    it "should print the string" do
+      subject.expects(:print).with(:stub_output)
+      subject.style
     end
   end
 end

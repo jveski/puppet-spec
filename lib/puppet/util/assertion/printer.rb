@@ -43,7 +43,7 @@ module Puppet::Util
         def style(&proc)
           printer = Puppet::Util::Assertion::Printer.new
           printer.instance_eval(&proc)
-          printer.to_s
+          print printer.to_s
         end
       end
 

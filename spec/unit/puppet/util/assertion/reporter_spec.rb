@@ -72,7 +72,6 @@ describe Puppet::Util::Assertion::Reporter do
 
   describe ".report" do
     it "should print the stylized assertion results" do
-      subject.expects(:print).with(:stub_string)
       subject.expects(:style).returns(:stub_string)
       subject.report(:stub_resource)
     end

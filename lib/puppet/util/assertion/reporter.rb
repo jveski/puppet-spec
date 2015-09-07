@@ -25,7 +25,7 @@ module Puppet::Util
 
       # Pretty print the results of an assertion to the console
       def report(assertion)
-        print style do
+        style do
           red      "#{failed}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}"
           newline
 
