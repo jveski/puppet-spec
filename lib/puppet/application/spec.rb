@@ -1,54 +1,52 @@
 require 'puppet'
 require 'puppet/test/test_helper'
-require 'puppet/util/colors'
+require 'puppet/util/assertion/reporter'
 require 'fileutils'
 
 class Puppet::Application::Spec < Puppet::Application
-  include Puppet::Util::Colors
 
   option("--manifest manifest",  "-m manifest")
 
+  attr_reader :reporter
+
   def run_command
-    output = Hash.new
+    @reporter = Puppet::Util::Assertion::Reporter.new
 
     begin
       Puppet::Test::TestHelper.initialize
-      if options[:manifest]
-        output = process_spec(options[:manifest])
-      else
-        output = process_spec_directory(specdir)
-      end
+      evaluate_assertions
+      reporter.print_footer
     rescue Exception => e
-      print colorize(:red, "#{e.message}\n")
-      exit 1
+      reporter.print_error(e)
     end
 
-    if output[:failed] == 0
-      exit 0
+    exit 1 unless reporter.failed == 0
+    exit 0
+  end
+
+  def evaluate_assertions
+    if options[:manifest]
+      process_spec(options[:manifest])
     else
-      exit 1
+      process_spec_directory(specdir)
     end
   end
 
   def process_spec_directory(specdir)
-    results = Dir.glob("#{specdir}/**/*_spec.pp").map { |spec| process_spec(spec) }.flatten
-    output = visit_assertions(results)
-    print_results(output)
-    output
+    Dir.glob("#{specdir}/**/*_spec.pp").map { |spec| process_spec(spec) }
   end
 
   def process_spec(path)
     catalog = catalog(path)
-    notify_compiled
-
     assertions = catalog.resources.select {|res| res.type == 'Assertion' }
 
-    # Get the subject resource from the catalog rather than the
-    # reference provided from the parser. The reference's resource
-    # object does not contain any parameters for whatever reason.
-    assertions.map do |res|
+    assertions.each do |res|
+      # Get the subject resource from the catalog rather than the
+      # reference provided from the parser. The reference's resource
+      # object does not contain any parameters for whatever reason.
       res[:subject] = catalog.resource(res[:subject].to_s)
-      res
+
+      reporter << res.to_ral
     end
   end
 
@@ -64,58 +62,6 @@ class Puppet::Application::Spec < Puppet::Application
 
     Puppet::Test::TestHelper.after_each_test
     catalog
-  end
-
-  # Return a hash that contains
-  # data to be displayed to the
-  # user which represents the results
-  # of the assertions.
-  def visit_assertions(assertions)
-    count = 0
-    failed_count = 0
-
-    msg = assertions.map do |assertion|
-      count += 1
-
-      unless assertion[:expectation] == assertion[:subject][assertion[:attribute]]
-        failed_count += 1
-        file = assertion[:subject].file.split('manifests/').last
-
-        msg = colorize(:red, "#{failed_count}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}\n")
-        msg += colorize(:yellow, "  On line #{assertion[:subject].line} of #{file}\n")
-        msg += colorize(:blue, "  Wanted: ")
-        msg += "#{assertion[:attribute]} => '#{assertion[:expectation]}'\n"
-        msg += colorize(:blue, "  Got:    ")
-        msg += "#{assertion[:attribute]} => '#{assertion[:subject][assertion[:attribute]]}'\n\n"
-      end
-    end
-
-    {
-      :msg    => msg.join,
-      :count  => count,
-      :failed => failed_count,
-    }
-  end
-
-  # Given the resulting hash
-  # from .visit_assertions,
-  # present the output to the
-  # user.
-  def print_results(results)
-    print "\n\n"
-    print results[:msg] if results[:msg]
-
-    if results[:count] == 1
-      print colorize(:yellow, "Evaluated #{results[:count]} assertion\n")
-    else
-      print colorize(:yellow, "Evaluated #{results[:count]} assertions\n")
-    end
-  end
-
-  # Print an rspec style dot
-  # to signify spec compilation
-  def notify_compiled
-    print colorize(:green, '.')
   end
 
   # Given a node object, return
