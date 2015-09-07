@@ -1,0 +1,81 @@
+require 'puppet/util/assertion/reporter'
+
+describe Puppet::Util::Assertion::Reporter do
+
+  describe "the initialization" do
+    it "should set the evaluated count to 0" do
+      expect(subject.evaluated).to eq(0)
+    end
+
+    it "should set the failed count to 0" do
+      expect(subject.failed).to eq(0)
+    end
+  end
+
+  describe ".<<" do
+    let(:the_resource) { stub(:provider => the_provider) }
+
+    before do
+      subject.stubs(:count)
+      subject.stubs(:fail)
+      subject.stubs(:report)
+    end
+
+    context "when given a true assertion" do
+      let(:the_provider) { stub(:failed? => false) }
+
+      it "should evaluate the assertion" do
+        the_provider.expects(:failed?)
+        subject << the_resource
+      end
+
+      it "should increment the assertion counter" do
+        subject.expects(:count).with(1)
+        subject << the_resource
+      end
+
+      it "should not increment the failed counter" do
+        subject.expects(:fail).never
+        subject << the_resource
+      end
+
+      it "should not print the assertion" do
+        subject.expects(:report).never
+        subject << the_resource
+      end
+    end
+
+    context "when given a false assertion" do
+      let(:the_provider) { stub(:failed? => true) }
+
+      it "should evaluate the assertion" do
+        the_provider.expects(:failed?)
+        subject << the_resource
+      end
+
+      it "should increment the assertion counter" do
+        subject.expects(:count).with(1)
+        subject << the_resource
+      end
+
+      it "should increment the failed counter" do
+        subject.expects(:fail).with(1)
+        subject << the_resource
+      end
+
+      it "should print the assertion" do
+        subject.expects(:report).with(the_resource)
+        subject << the_resource
+      end
+    end
+  end
+
+  describe ".report" do
+    it "should print the stylized assertion results" do
+      subject.expects(:print).with(:stub_string)
+      subject.expects(:style).returns(:stub_string)
+      subject.report(:stub_resource)
+    end
+  end
+
+end
