@@ -30,7 +30,7 @@ describe Puppet::Util::Assertion::Reporter do
       end
 
       it "should increment the assertion counter" do
-        subject.expects(:count).with(1)
+        subject.expects(:count)
         subject << the_resource
       end
 
@@ -54,12 +54,12 @@ describe Puppet::Util::Assertion::Reporter do
       end
 
       it "should increment the assertion counter" do
-        subject.expects(:count).with(1)
+        subject.expects(:count)
         subject << the_resource
       end
 
       it "should increment the failed counter" do
-        subject.expects(:fail).with(1)
+        subject.expects(:fail)
         subject << the_resource
       end
 
@@ -75,6 +75,22 @@ describe Puppet::Util::Assertion::Reporter do
       subject.expects(:print).with(:stub_string)
       subject.expects(:style).returns(:stub_string)
       subject.report(:stub_resource)
+    end
+  end
+
+  describe ".count" do
+    it "should increment evaluated" do
+      subject.count
+      subject.count
+      expect(subject.evaluated).to eq(2)
+    end
+  end
+
+  describe ".fail" do
+    it "should increment failed" do
+      subject.fail
+      subject.fail
+      expect(subject.failed).to eq(2)
     end
   end
 

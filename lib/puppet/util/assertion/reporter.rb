@@ -16,9 +16,9 @@ module Puppet::Util
       # and send it to .report on failure. Increment the counter
       # for each resource, and the failed counter for failed resources.
       def <<(assertion)
-        count 1
+        count
         if assertion.provider.failed?
-          fail 1
+          fail
           report(assertion)
         end
       end
@@ -41,6 +41,14 @@ module Puppet::Util
           newline
           newline
         end
+      end
+
+      def count
+        @evaluated += 1
+      end
+
+      def fail
+        @failed += 1
       end
 
     end
