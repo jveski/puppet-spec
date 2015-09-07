@@ -37,6 +37,13 @@ module Puppet::Util
         end
       end
 
+      def print_error(err)
+        fail #Mark an assertion so the application exits 1
+        style do
+          red err.message
+        end
+      end
+
       # Pretty print the results of an assertion to the console
       def report(assertion)
         # Shim the value of failed into the

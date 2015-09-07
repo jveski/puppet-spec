@@ -77,6 +77,25 @@ describe Puppet::Util::Assertion::Reporter do
     end
   end
 
+  describe ".print_error" do
+    let(:the_error) { stub(:message => :stub_message) }
+
+    before do
+      subject.stubs(:style)
+      subject.stubs(:fail)
+    end
+
+    it "should mark a failed assertion" do
+      subject.expects(:fail)
+      subject.print_error(the_error)
+    end
+
+    it "should print the error" do
+      subject.expects(:style)
+      subject.print_error(the_error)
+    end
+  end
+
   describe ".report" do
     it "should print the stylized assertion results" do
       subject.expects(:style)
