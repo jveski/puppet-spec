@@ -10,7 +10,7 @@ describe "the stub_type function" do
 
   before do
     the_compiler.stubs(:environment).returns(the_environment)
-    Puppet::Util::Stubs::Type.stubs(:new).returns(:stub_type)
+    Puppet::Util::Assertion::Stubs::Type.stubs(:new).returns(:stub_type)
   end
 
   context "when given a hash" do
@@ -23,7 +23,7 @@ describe "the stub_type function" do
 
   context "when given string" do
     it "should instantiate a stub type" do
-      Puppet::Util::Stubs::Type.expects(:new).with(:definition, "stub type name")
+      Puppet::Util::Assertion::Stubs::Type.expects(:new).with(:definition, "stub type name")
       the_scope.function_stub_type(["stub type name"])
     end
 
