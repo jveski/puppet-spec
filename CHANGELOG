@@ -1,3 +1,11 @@
+## 2015-09-08 - 1.1.0
+#### Improvements
+- Issue #21 - Refactor console output
+- Issue #19 - Fix the --manifest flag
+- Issue #17 - Move assertion input validation to the type
+- Issue #6 - Allow stubbed classes to receive arbitrary parameters
+- Issue #5 - CLI option for specifying single spec manifest
+
 ## 2015-09-03 - 1.0.2
 #### Improvements
 - Issue #12 - Gem / Rake tasks
