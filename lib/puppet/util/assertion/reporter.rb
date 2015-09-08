@@ -43,6 +43,7 @@ module Puppet::Util
         fail #Mark an assertion so the application exits 1
         style do
           red err.message
+          newline
         end
       end
 
