@@ -30,9 +30,11 @@ module Puppet::Util
 
         style do
           if reporter.evaluated == 1
-            yellow "Evaluated 1 assertion\n"
+            yellow "Evaluated 1 assertion"
+            newline
           else
-            yellow "Evaluated #{reporter.evaluated} assertions\n"
+            yellow "Evaluated #{reporter.evaluated} assertions"
+            newline
           end
         end
       end
