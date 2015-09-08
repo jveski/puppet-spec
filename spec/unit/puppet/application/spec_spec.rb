@@ -11,15 +11,18 @@ describe Puppet::Application::Spec do
   end
 
   describe ".run_command" do
-    let(:the_results) {{ :failed => 0 }}
+    let(:the_reporter) { stub(:print_error => nil, :print_footer => nil, :failed => 0) }
 
     before do
       Puppet::Test::TestHelper.stubs(:initialize)
-      subject.stubs(:process_spec_directory).returns(the_results)
-      subject.stubs(:process_spec).returns(the_results)
-      subject.stubs(:print)
+      Puppet::Util::Assertion::Reporter.stubs(:new).returns(the_reporter)
+      subject.stubs(:reporter).returns(the_reporter)
+      subject.stubs(:evaluate_assertions)
       subject.stubs(:exit)
-      subject.stubs(:specdir).returns(:stub_specdir)
+    end
+
+    it "should instantiate a reporter" do
+      expect(subject.reporter).to eq(the_reporter)
     end
 
     it "should initialize Puppet" do
@@ -27,58 +30,73 @@ describe Puppet::Application::Spec do
       subject.run_command
     end
 
-    context "when the manifest has not been configured" do
-      it "should process the spec directory" do
-        subject.expects(:process_spec_directory).with(:stub_specdir).returns(the_results)
-        subject.run_command
-      end
+    it "should evaluate the assertions" do
+      subject.expects(:evaluate_assertions)
+      subject.run_command
     end
 
-    context "when the manifest been configured" do
-      before { subject.send(:handle_manifest, :stub_manifest) }
-
-      it "should not process the spec directory" do
-        puts subject.options
-        subject.expects(:process_spec).with(:stub_manifest).returns(the_results)
-        subject.run_command
-      end
+    it "should print the footer" do
+      the_reporter.expects(:print_footer)
+      subject.run_command
     end
 
     context "when an error is not raised" do
       it "should not print to the console" do
-        subject.expects(:print).never
+        the_reporter.expects(:print_error).never
         subject.run_command
-      end
-
-      context "when the test contains failures" do
-        let(:the_results) {{ :failed => 1 }}
-        it "should exit 1" do
-          subject.expects(:exit).with(1)
-          subject.run_command
-        end
-      end
-
-      context "when the test does not contain failures" do
-        let(:the_results) {{ :failed => 0 }}
-        it "should exit 0" do
-          subject.expects(:exit).with(0)
-          subject.run_command
-        end
       end
     end
 
     context "when an error is raised" do
       let(:the_error) { Exception.new('stub exception') }
-      before { subject.stubs(:process_spec_directory).raises(the_error) }
+      before { subject.stubs(:evaluate_assertions).raises(the_error) }
 
-      it "should print it to the console" do
-        subject.expects(:print).with("\e[0;31mstub exception\n\e[0m")
+      it "should report it" do
+        the_reporter.expects(:print_error).with(the_error)
         subject.run_command
       end
+    end
 
+    context "when the reporter contains 3 failures" do
+      before { the_reporter.stubs(:failed).returns(3) }
       it "should exit 1" do
         subject.expects(:exit).with(1)
         subject.run_command
+      end
+    end
+
+    context "when the reporter contains 0 failures" do
+      before { the_reporter.stubs(:failed).returns(0) }
+
+      it "should exit 0" do
+        subject.expects(:exit).with(0)
+        subject.run_command
+      end
+    end
+  end
+
+  describe ".evaluate_assertions" do
+    let(:the_manifest) { nil }
+
+    before do
+      subject.stubs(:specdir).returns(:stub_directory)
+      subject.stubs(:options).returns({
+        :manifest => the_manifest,
+      })
+    end
+
+    context "when the manifest option hasn't been set" do
+      it "should process the spec directory" do
+        subject.expects(:process_spec_directory).with(:stub_directory)
+        subject.evaluate_assertions
+      end
+    end
+
+    context "when the manifest option has been set" do
+      let(:the_manifest) { :stub_manifest }
+      it "should process the given manifest" do
+        subject.expects(:process_spec).with(:stub_manifest)
+        subject.evaluate_assertions
       end
     end
   end
@@ -94,8 +112,6 @@ describe Puppet::Application::Spec do
       subject.stubs(:process_spec).with(:stub_spec1).returns(:stub_result1)
       subject.stubs(:process_spec).with(:stub_spec2).returns(:stub_result2)
       subject.stubs(:process_spec).with(:stub_spec3).returns([:stub_result3])
-      subject.stubs(:visit_assertions).returns(:stub_results)
-      subject.stubs(:print_results)
       Dir.stubs(:glob).returns(the_files)
     end
 
@@ -110,31 +126,20 @@ describe Puppet::Application::Spec do
       subject.expects(:process_spec).once.with(the_files[2])
       subject.process_spec_directory('stub_path')
     end
-
-    it "should evaluate the assertion resources" do
-      subject.expects(:visit_assertions).with(
-        [:stub_result1, :stub_result2, :stub_result3]
-      ).returns(:stub_results)
-      subject.process_spec_directory('stub_path')
-    end
-
-    it "should print the results" do
-      subject.expects(:print_results).once.with(:stub_results)
-      subject.process_spec_directory('stub_path')
-    end
   end
 
   describe ".process_spec" do
     let(:the_catalog) { stub(:resources => the_resources) }
+    let(:the_reporter) { stub(:<< => nil) }
     let(:the_resources) {[
-      stub(:[]= => nil, :type => 'Assertion', :[] => :stub_subject1),
+      stub(:[]= => nil, :type => 'Assertion', :[] => :stub_subject1, :to_ral => :stub_resource),
       stub(:[]= => nil, :type => 'Not an Assertion', :[] => :stub_subject2),
     ]}
 
     before do
+      subject.stubs(:reporter).returns(the_reporter)
       subject.stubs(:catalog).returns(the_catalog)
       the_catalog.stubs(:resource).with('stub_subject1').returns(:stub_catalog_resource)
-      subject.stubs(:notify_compiled)
       subject.stubs(:evaluate)
       subject.stubs(:visit_assertions).returns(:stub_assertions)
     end
@@ -144,18 +149,14 @@ describe Puppet::Application::Spec do
       subject.process_spec(:stub_path)
     end
 
-    it "should print a notification" do
-      subject.expects(:notify_compiled)
-      subject.process_spec(:stub_path)
-    end
-
     it "should set each subject from the catalog" do
       the_resources[0].expects(:[]=).with(:subject, :stub_catalog_resource)
       subject.process_spec(:stub_path)
     end
 
-    it "should return the assertions" do
-      expect(subject.process_spec(:stub_path)).to eq([the_resources[0]])
+    it "should pass each assertion to the reporter" do
+      the_reporter.expects(:<<).once.with(the_resources[0].to_ral)
+      subject.process_spec(:stub_path)
     end
   end
 
@@ -217,163 +218,6 @@ describe Puppet::Application::Spec do
 
     it "should return the catalog" do
       expect(subject.catalog(:stub_path)).to eq(the_catalog)
-    end
-  end
-
-  describe ".visit_assertions" do
-    before do
-    end
-
-    context "when given one passing assertion" do
-      let(:the_assertions) {[
-        {
-          :expectation => 'stub_expectation_1',
-          :attribute   => 'stub_attribute_1',
-          :name        => 'stub_name_1',
-          :subject     => {
-            'stub_attribute_1' => 'stub_expectation_1',
-          },
-        }
-      ]}
-      it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq({
-          :count  => 1,
-          :failed => 0,
-          :msg    => "",
-        })
-      end
-    end
-
-    context "when given two passing assertions" do
-      let(:the_assertions) {[
-        {
-          :expectation => 'stub_expectation_1',
-          :attribute   => 'stub_attribute_1',
-          :name        => 'stub_name_1',
-          :subject     => {
-            'stub_attribute_1' => 'stub_expectation_1',
-          },
-        },
-        {
-          :expectation => 'stub_expectation_2',
-          :attribute   => 'stub_attribute_2',
-          :name        => 'stub_name_2',
-          :subject     => {
-            'stub_attribute_2' => 'stub_expectation_2',
-          },
-        }
-      ]}
-      it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq({
-          :count  => 2,
-          :failed => 0,
-          :msg    => "",
-        })
-      end
-    end
-
-    context "when given one passing and one failing assertion" do
-      let(:the_subject1){ stub(:file => 'manifests/stub/1', :line => 'stub line 1', :to_s => 'stb2') }
-      let(:the_subject2){ stub(:file => 'manifests/stub/2', :line => 'stub line 2', :to_s => 'stb1') }
-      let(:the_assertions){[
-        {
-          :expectation => 'stub_expectation_1',
-          :attribute   => 'stub_attribute_1',
-          :name        => 'stub_name_1',
-          :subject     => the_subject1
-        },
-        {
-          :expectation => 'stub_expectation_2',
-          :attribute   => 'stub_attribute_2',
-          :name        => 'stub_name_2',
-          :subject     => the_subject2
-        }
-      ]}
-      before do
-        the_subject1.stubs(:[]).with('stub_attribute_1').returns('the stub_attribute_1 value')
-        the_subject2.stubs(:[]).with('stub_attribute_2').returns('not the stub_attribute_2 value')
-      end
-      it "should return the expected output" do
-        expect(subject.visit_assertions(the_assertions)).to eq({
-          :count  => 2,
-          :failed => 2,
-          :msg    => "\e[0;31m1) Assertion stub_name_1 failed on stb2\n\e[0m\e[0;33m  On line stub line 1 of stub/1\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_1 => 'stub_expectation_1'\n\e[0;34m  Got:    \e[0mstub_attribute_1 => 'the stub_attribute_1 value'\n\n\e[0;31m2) Assertion stub_name_2 failed on stb1\n\e[0m\e[0;33m  On line stub line 2 of stub/2\n\e[0m\e[0;34m  Wanted: \e[0mstub_attribute_2 => 'stub_expectation_2'\n\e[0;34m  Got:    \e[0mstub_attribute_2 => 'not the stub_attribute_2 value'\n\n",
-        })
-      end
-    end
-  end
-
-  describe ".print_results" do
-    let(:the_results) {{}}
-
-    before do
-      subject.stubs(:print)
-    end
-
-    it "should print two newlines" do
-      subject.expects(:print).once.with("\n\n")
-      subject.print_results(the_results)
-    end
-
-    context "when given a hash with a message" do
-      let(:the_results) {{
-        :msg => "stub message",
-      }}
-
-      it "should print the message" do
-        subject.expects(:print).once.with("stub message")
-        subject.print_results(the_results)
-      end
-    end
-
-    context "when given a hash with no message" do
-      it "should not print the message" do
-        subject.expects(:print).once.with("stub message").never
-        subject.print_results(the_results)
-      end
-    end
-
-    context "when given a hash with one resource" do
-      let(:the_results) {{
-        :count => 1
-      }}
-
-      it "should print a singular footer message" do
-        subject.expects(:print).with("\e[0;33mEvaluated 1 assertion\n\e[0m")
-        subject.print_results(the_results)
-      end
-    end
-
-    context "when given a hash with two resources" do
-      let(:the_results) {{
-        :count => 2
-      }}
-
-      it "should print a plural footer message" do
-        subject.expects(:print).with("\e[0;33mEvaluated 2 assertions\n\e[0m")
-        subject.print_results(the_results)
-      end
-    end
-
-    context "when given a hash with no resources" do
-      let(:the_results) {{
-        :count => 0
-      }}
-
-      it "should print a plural footer message" do
-        subject.expects(:print).with("\e[0;33mEvaluated 0 assertions\n\e[0m")
-        subject.print_results(the_results)
-      end
-    end
-
-  end
-
-  describe ".notify_compiled" do
-    before { subject.stubs(:print) }
-
-    it "should print a green period" do
-      subject.expects(:print).with("\e[0;32m.\e[0m")
-      subject.notify_compiled
     end
   end
 
@@ -491,7 +335,7 @@ describe Puppet::Application::Spec do
 
       it "should raise an error" do
         expect{subject.specdir}.to raise_error(
-          'No spec directory was found under the CWD. You can optionally specifiy one with --specdir'
+          'No spec directory was found under the CWD. A spec manifest can be specified with the --manifest flag'
         )
       end
     end
