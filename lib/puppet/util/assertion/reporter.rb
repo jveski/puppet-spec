@@ -47,6 +47,27 @@ module Puppet::Util
         end
       end
 
+      # Print the appropriate error message when an assertion's
+      # subject is not found in the catalog. Called by the application
+      # because the resource must be evaluated prior to calling
+      # .to_ral to avoid the validation raising an error.
+      def missing_subject(assertion)
+        fail
+
+        # Shim the value of failed into the
+        # local scope in order to access it
+        # from the style proc.
+        failed = @failed
+
+        style do
+          red      "#{failed}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}"
+          newline
+          blue     "  Subject was not in the catalog"
+          newline
+          newline
+        end
+      end
+
       # Pretty print the results of an assertion to the console
       def report(assertion)
         # Shim the value of failed into the
