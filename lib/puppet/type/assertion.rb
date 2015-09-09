@@ -1,10 +1,6 @@
 Puppet::Type.newtype(:assertion) do
 
-  @doc = "Makes assertions on the state of a resource in the catalog.
-
-  The assertion type defines an assertion that will be evaluated by the
-  spec application.
-  "
+  @doc = "An assertion on the state of a resource in the catalog"
 
   validate do
     fail Puppet::Error, "a subject is required" unless @parameters[:subject]
@@ -13,7 +9,7 @@ Puppet::Type.newtype(:assertion) do
   end
 
   newparam(:name) do
-    desc "A plain text message describing what the assertion is intended to prove.
+    desc "A plain text message describing what the assertion is attempting to prove.
 
     The given text should form a sentence using the type's name.
     Example: assertion { 'that the configuration file has the correct contents': }
