@@ -42,3 +42,7 @@ assertion { 'the other thing is around':
   attribute   => 'ensure',
   expectation => 'around',
 }
+
+assertion { 'the resource is in the catalog':
+  subject => File['/tmp/should/be/around'],
+}

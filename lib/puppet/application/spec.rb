@@ -38,15 +38,21 @@ class Puppet::Application::Spec < Puppet::Application
 
   def process_spec(path)
     catalog = catalog(path)
-    assertions = catalog.resources.select {|res| res.type == 'Assertion' }
 
+    assertions = catalog.resources.select {|res| res.type == 'Assertion' }
     assertions.each do |res|
       # Get the subject resource from the catalog rather than the
       # reference provided from the parser. The reference's resource
       # object does not contain any parameters for whatever reason.
-      res[:subject] = catalog.resource(res[:subject].to_s)
+      catalog_subject = catalog.resource(res[:subject].to_s)
 
-      reporter << res.to_ral
+      if catalog_subject
+        res[:subject] = catalog_subject
+        reporter << res.to_ral
+      else
+        reporter.missing_subject(res)
+      end
+
     end
   end
 

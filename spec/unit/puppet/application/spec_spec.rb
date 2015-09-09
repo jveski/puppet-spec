@@ -130,7 +130,7 @@ describe Puppet::Application::Spec do
 
   describe ".process_spec" do
     let(:the_catalog) { stub(:resources => the_resources) }
-    let(:the_reporter) { stub(:<< => nil) }
+    let(:the_reporter) { stub(:<< => nil, :missing_subject => nil) }
     let(:the_resources) {[
       stub(:[]= => nil, :type => 'Assertion', :[] => :stub_subject1, :to_ral => :stub_resource),
       stub(:[]= => nil, :type => 'Not an Assertion', :[] => :stub_subject2),
@@ -149,14 +149,39 @@ describe Puppet::Application::Spec do
       subject.process_spec(:stub_path)
     end
 
-    it "should set each subject from the catalog" do
-      the_resources[0].expects(:[]=).with(:subject, :stub_catalog_resource)
-      subject.process_spec(:stub_path)
+    context "when the subject is found in the catalog" do
+      before { the_catalog.stubs(:resource).with('stub_subject1').returns(:stub_catalog_resource) }
+
+      it "should pass it to the reporter" do
+        the_reporter.expects(:<<).once.with(the_resources[0].to_ral)
+        subject.process_spec(:stub_path)
+      end
+
+      it "should set each assertion subject from the catalog" do
+        the_resources[0].expects(:[]=).with(:subject, :stub_catalog_resource)
+        the_resources[1].expects(:[]=).never
+        subject.process_spec(:stub_path)
+      end
     end
 
-    it "should pass each assertion to the reporter" do
-      the_reporter.expects(:<<).once.with(the_resources[0].to_ral)
-      subject.process_spec(:stub_path)
+    context "when the subject is not found in the catalog" do
+      before { the_catalog.stubs(:resource).with('stub_subject1').returns(nil) }
+
+      it "should not pass it to the reporter" do
+        the_reporter.expects(:<<).never
+        subject.process_spec(:stub_path)
+      end
+
+      it "should not set each assertion subject from the catalog" do
+        the_resources[0].expects(:[]=).never
+        the_resources[1].expects(:[]=).never
+        subject.process_spec(:stub_path)
+      end
+
+      it "should report a missing subject" do
+        the_reporter.expects(:missing_subject).with(the_resources[0])
+        subject.process_spec(:stub_path)
+      end
     end
   end
 
