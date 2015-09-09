@@ -37,13 +37,13 @@ file { '/tmp/test':
   content => 'The file content',
 }
 
-assertion { 'the file has the correct contents':
+assertion { 'that the file has the correct contents':
   subject     => File['/tmp/test'],
   attribute   => 'content',
   expectation => 'The file content',
 }
 
-assertion { 'the file is present':
+assertion { 'that the file is present':
   subject     => File['/tmp/test'],
   attribute   => 'ensure',
   expectation => 'present',
@@ -71,11 +71,11 @@ Okay. Puppet spec test cases are just manifests that happen to contain assertion
 ```puppet
 include apache
 
-assertion { 'the apache::ssl class is in the catalog':
+assertion { 'that the apache::ssl class is in the catalog':
   subject     => Class['apache::ssl'],
 }
 
-assertion { 'the apache package version is correct':
+assertion { 'that the apache package version is correct':
   subject     => Package['apache::package'],
   attribute   => 'ensure',
   expectation => '1.2.3',
