@@ -1,3 +1,8 @@
+## 2015-09-09 - 1.1.1
+#### Improvements
+- Issue #4 - Documentation Corrections
+- Issue #22 - Better handling of non-existent assertion subjects
+
 ## 2015-09-08 - 1.1.0
 #### Improvements
 - Issue #21 - Refactor console output
