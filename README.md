@@ -9,7 +9,7 @@ Yes! Testing your Puppet code base will allow you to refactor without wanting to
 ## Getting Started
 ### Installation
 #### Puppet Module
-Puppet spec is distributed as a simple Puppet module, and is invoked by running `puppet spec`. You can install the module by cloning this repository into your modulepath, or by running `puppet module install jordan/spec`
+You can install the Puppet spec module by cloning this repository into your modulepath, or by running `puppet module install jordan/spec`. Once the module is in your modulepath, the Puppet application `puppet spec` will be available.
 
 #### Rubygem
 If your Puppet module has a Gemfile, you can add the gem `puppet-spec` as a dependency and include the bundled rake task to simplify the process of invoking your test suite.
