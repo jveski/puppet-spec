@@ -19,7 +19,7 @@ module Puppet::Util
         count
 
         # If ensure is present, and the resource is not in the catalog
-        if assertion[:ensure] != 'absent' and not assertion[:subject].catalog
+        if assertion[:ensure] == 'present' and not assertion[:subject].catalog
           fail
           expected_present(assertion)
           return
