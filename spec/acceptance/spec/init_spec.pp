@@ -46,3 +46,8 @@ assertion { 'that the other thing is around':
 assertion { 'that the resource is in the catalog':
   subject => File['/tmp/should/be/around'],
 }
+
+assertion { 'that the undesired file is not in the catalog':
+  ensure  => absent,
+  subject => File['/tmp/should/not/be/around'],
+}

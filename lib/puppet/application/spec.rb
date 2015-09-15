@@ -45,14 +45,9 @@ class Puppet::Application::Spec < Puppet::Application
       # reference provided from the parser. The reference's resource
       # object does not contain any parameters for whatever reason.
       catalog_subject = catalog.resource(res[:subject].to_s)
+      res[:subject] = catalog_subject if catalog_subject
 
-      if catalog_subject
-        res[:subject] = catalog_subject
-        reporter << res.to_ral
-      else
-        reporter.missing_subject(res)
-      end
-
+      reporter << res.to_ral
     end
   end
 

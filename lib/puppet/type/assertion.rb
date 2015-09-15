@@ -4,6 +4,8 @@ Puppet::Type.newtype(:assertion) do
 
   validate do
     fail Puppet::Error, "a subject is required" unless @parameters[:subject]
+    fail Puppet::Error, "an assertion on the absence of a resource cannot have an attribute" if @parameters[:attribute] and @parameters[:ensure].value == 'absent'
+    fail Puppet::Error, "an assertion on the absence of a resource cannot have an expectation" if @parameters[:expectation] and @parameters[:ensure].value == 'absent'
     fail Puppet::Error, "an attribute is required when an expectation is given" if @parameters[:expectation] and not @parameters[:attribute]
     fail Puppet::Error, "an expectation is required when an attribute is given" if @parameters[:attribute] and not @parameters[:expectation]
   end
@@ -33,6 +35,25 @@ Puppet::Type.newtype(:assertion) do
 
   newparam(:expectation) do
     desc "The expected value of the subject's attribute"
+  end
+
+  newparam(:ensure) do
+    desc "If ensure is set to absent, the resource will assert for the absence of the subject in the catalog.
+
+    Defaults to present.
+    "
+
+    defaultto "present"
+
+    validate do |value|
+      fail Puppet::Error, "Ensure only accepts values 'present' or 'absent'" unless value == 'present' or value == 'absent'
+    end
+
+    # Stub out the retrieve method since
+    # the Puppet internals require any param
+    # named ensure to have it. Grr.
+    def retrieve
+    end
   end
 
 end
