@@ -73,7 +73,7 @@ module Puppet::Util
         style do
           red      "#{failed}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}"
           newline
-          blue     "  Subject was not in the catalog"
+          blue     "  Subject was expected to be present in the catalog, but was absent"
           newline
           newline
         end
