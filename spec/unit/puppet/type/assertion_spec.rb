@@ -65,6 +65,40 @@ describe Puppet::Type.type(:assertion) do
         )
       end
     end
+
+    context "when given an expectation and ensure absent" do
+      subject do
+        Puppet::Type.type(:assertion).new(
+          :name        => :stub_name,
+          :ensure      => 'absent',
+          :expectation => :stub_expectation,
+          :subject     => Puppet::Resource.new(:stub_type, :stub_subject),
+        )
+      end
+
+      it "should raise an error" do
+        expect{subject.validate}.to raise_error(
+          'Validation of Assertion[stub_name] failed: an assertion on the absence of a resource cannot have an expectation'
+        )
+      end
+    end
+
+    context "when given an attribute and ensure absent" do
+      subject do
+        Puppet::Type.type(:assertion).new(
+          :name        => :stub_name,
+          :ensure      => 'absent',
+          :attribute   => :stub_attribute,
+          :subject     => Puppet::Resource.new(:stub_type, :stub_subject),
+        )
+      end
+
+      it "should raise an error" do
+        expect{subject.validate}.to raise_error(
+          'Validation of Assertion[stub_name] failed: an assertion on the absence of a resource cannot have an attribute'
+        )
+      end
+    end
   end
 end
 
