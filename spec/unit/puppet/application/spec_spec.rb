@@ -177,11 +177,6 @@ describe Puppet::Application::Spec do
         the_resources[1].expects(:[]=).never
         subject.process_spec(:stub_path)
       end
-
-      it "should report a missing subject" do
-        the_reporter.expects(:missing_subject).with(the_resources[0])
-        subject.process_spec(:stub_path)
-      end
     end
   end
 
