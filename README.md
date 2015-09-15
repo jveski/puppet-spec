@@ -3,8 +3,8 @@
 
 Test Puppet code with Puppet code.
 
-## Do I really need to test my Puppet code?
-Yes! Testing your Puppet code base will allow you to refactor without wanting to stab out your own eyeballs, and generally fosters a spirit of confidence around making changes. If you haven't written tests before, you may want to become familiar with some basic terminology and best practices before diving in. That said, this tool is intended to provide a low barrier to entry for those new to testing, and should be idiomatic for anyone familiar with the Puppet DSL.
+## Why not rspec-puppet?
+Puppet-spec is intended to provide a low barrier to entry for those new to testing, and is idiomatic for anyone familiar with the Puppet DSL. Rspec-puppet, while more powerful, is far more complex and requires past exposure to Ruby and rspec. Don't think of puppet-spec as an attempt to undermine the wide adoption of rspec-puppet in the community, but rather the fulfilment of an unmet, yet significant need.
 
 ## Getting Started
 ### Installation
