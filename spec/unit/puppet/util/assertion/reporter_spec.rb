@@ -41,7 +41,7 @@ describe Puppet::Util::Assertion::Reporter do
       end
 
       it "should print a message" do
-        subject.expects(:expected_present)
+        subject.expects(:expected_present).with(the_resource)
         subject << the_resource
       end
     end
@@ -98,7 +98,7 @@ describe Puppet::Util::Assertion::Reporter do
       end
 
       it "should print a message" do
-        subject.expects(:expected_absent)
+        subject.expects(:expected_absent).with(the_resource)
         subject << the_resource
       end
     end

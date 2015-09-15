@@ -20,11 +20,11 @@ module Puppet::Util
 
         if assertion[:ensure] != 'absent' and assertion[:subject] == :absent
           fail
-          expected_present
+          expected_present(assertion)
           return
         elsif assertion[:ensure] == 'absent' and assertion[:subject] != :absent
           fail
-          expected_absent
+          expected_absent(assertion)
           return
         end
 
