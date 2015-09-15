@@ -12,15 +12,31 @@ module Puppet::Util
         @failed = 0
       end
 
-      # Given an assertion resource, evaluate it for success
-      # and send it to .report on failure. Increment the counter
-      # for each resource, and the failed counter for failed resources.
+      # Given an assertion resource, evaluate it for success,
+      # and on failure, call the appropriate method responsible to render the
+      # message, and increment the counter(s).
       def <<(assertion)
         count
+
+        # If ensure is present, and the resource is not in the catalog
+        if assertion[:ensure] == 'present' and not assertion[:subject].catalog
+          fail
+          expected_present(assertion)
+          return
+
+        # If ensure is absent, and the resource is in the catalog
+        elsif assertion[:ensure] == 'absent' and assertion[:subject].catalog
+          fail
+          expected_absent(assertion)
+          return
+        end
+
         if assertion.provider.failed?
           fail
-          report(assertion)
+          inequal_value(assertion)
+          return
         end
+
       end
 
       # Print the summary of evaluated assertions
@@ -48,12 +64,9 @@ module Puppet::Util
       end
 
       # Print the appropriate error message when an assertion's
-      # subject is not found in the catalog. Called by the application
-      # because the resource must be evaluated prior to calling
-      # .to_ral to avoid the validation raising an error.
-      def missing_subject(assertion)
-        fail
-
+      # subject is found in the catalog but was intended to be
+      # absent.
+      def expected_absent(assertion)
         # Shim the value of failed into the
         # local scope in order to access it
         # from the style proc.
@@ -62,14 +75,31 @@ module Puppet::Util
         style do
           red      "#{failed}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}"
           newline
-          blue     "  Subject was not in the catalog"
+          blue     "  Subject was expected to be absent from the catalog, but was present"
+          newline
+          newline
+        end
+      end
+
+      # Print the appropriate error message when an assertion's
+      # subject is not found in the catalog.
+      def expected_present(assertion)
+        # Shim the value of failed into the
+        # local scope in order to access it
+        # from the style proc.
+        failed = @failed
+
+        style do
+          red      "#{failed}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}"
+          newline
+          blue     "  Subject was expected to be present in the catalog, but was absent"
           newline
           newline
         end
       end
 
       # Pretty print the results of an assertion to the console
-      def report(assertion)
+      def inequal_value(assertion)
         # Shim the value of failed into the
         # local scope in order to access it
         # from the style proc.
