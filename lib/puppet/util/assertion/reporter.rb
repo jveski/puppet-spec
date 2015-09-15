@@ -61,10 +61,8 @@ module Puppet::Util
       end
 
       # Print the appropriate error message when an assertion's
-      # subject is not found in the catalog. Called by the application
-      # because the resource must be evaluated prior to calling
-      # .to_ral to avoid the validation raising an error.
-      def missing_subject(assertion)
+      # subject is not found in the catalog.
+      def expected_present(assertion)
         fail
 
         # Shim the value of failed into the
