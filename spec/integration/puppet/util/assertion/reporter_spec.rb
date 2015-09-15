@@ -95,4 +95,16 @@ describe Puppet::Util::Assertion::Reporter do
 
     end
   end
+
+  describe ".print_error" do
+    let(:the_error) { stub(:message => 'stub message') }
+
+    before { subject.stubs(:print) }
+
+    it "should print the expected message" do
+      subject.expects(:print).with("\e[0;31mstub message\e[0m\n")
+      subject.print_error(the_error)
+    end
+
+  end
 end
