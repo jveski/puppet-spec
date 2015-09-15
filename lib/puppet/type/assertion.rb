@@ -21,10 +21,6 @@ Puppet::Type.newtype(:assertion) do
 
     The referenced resource will be the subject of any assertions made as a result of this resource declaration.
     "
-
-    validate do |value|
-      fail Puppet::Error, "Subject must be a resource reference" unless value.is_a? Puppet::Resource
-    end
   end
 
   newparam(:attribute) do
