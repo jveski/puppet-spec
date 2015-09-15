@@ -64,8 +64,6 @@ module Puppet::Util
       # subject is found in the catalog but was intended to be
       # absent.
       def expected_absent(assertion)
-        fail
-
         # Shim the value of failed into the
         # local scope in order to access it
         # from the style proc.
@@ -83,8 +81,6 @@ module Puppet::Util
       # Print the appropriate error message when an assertion's
       # subject is not found in the catalog.
       def expected_present(assertion)
-        fail
-
         # Shim the value of failed into the
         # local scope in order to access it
         # from the style proc.
