@@ -148,10 +148,10 @@ describe Puppet::Util::Assertion::Reporter do
     end
   end
 
-  describe ".report" do
+  describe ".inequal_value" do
     it "should print the stylized assertion results" do
       subject.expects(:style)
-      subject.report(:stub_resource)
+      subject.inequal_value(:stub_resource)
     end
   end
 

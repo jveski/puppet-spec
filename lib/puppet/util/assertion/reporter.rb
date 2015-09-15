@@ -12,9 +12,9 @@ module Puppet::Util
         @failed = 0
       end
 
-      # Given an assertion resource, evaluate it for success
-      # and on failure, call the appropriate method responsible 
-      # to render the message, and increment the counter(s).
+      # Given an assertion resource, evaluate it for success,
+      # and on failure, call the appropriate method responsible to render the
+      # message, and increment the counter(s).
       def <<(assertion)
         count
 
@@ -82,7 +82,7 @@ module Puppet::Util
       end
 
       # Pretty print the results of an assertion to the console
-      def report(assertion)
+      def inequal_value(assertion)
         # Shim the value of failed into the
         # local scope in order to access it
         # from the style proc.
