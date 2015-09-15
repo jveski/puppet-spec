@@ -61,6 +61,26 @@ module Puppet::Util
       end
 
       # Print the appropriate error message when an assertion's
+      # subject is found in the catalog but was intended to be
+      # absent.
+      def expected_absent(assertion)
+        fail
+
+        # Shim the value of failed into the
+        # local scope in order to access it
+        # from the style proc.
+        failed = @failed
+
+        style do
+          red      "#{failed}) Assertion #{assertion[:name]} failed on #{assertion[:subject].to_s}"
+          newline
+          blue     "  Subject was expected to be absent from the catalog, but was present"
+          newline
+          newline
+        end
+      end
+
+      # Print the appropriate error message when an assertion's
       # subject is not found in the catalog.
       def expected_present(assertion)
         fail
