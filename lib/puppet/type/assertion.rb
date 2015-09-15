@@ -46,6 +46,12 @@ Puppet::Type.newtype(:assertion) do
     validate do |value|
       fail Puppet::Error, "Ensure only accepts values 'present' or 'absent'" unless value == 'present' or value == 'absent'
     end
+
+    # Stub out the retrieve method since
+    # the Puppet internals require any param
+    # named ensure to have it. Grr.
+    def retrieve
+    end
   end
 
 end

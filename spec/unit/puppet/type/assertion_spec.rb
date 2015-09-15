@@ -107,6 +107,12 @@ describe Puppet::Type::Assertion::ParameterEnsure do
   let(:the_resource) { stub }
   subject { Puppet::Type::Assertion::ParameterEnsure.new(:resource => the_resource) }
 
+  describe ".retrieve" do
+    it "should respond" do
+      expect(subject).to respond_to(:retrieve)
+    end
+  end
+
   describe ".validate" do
     context "when given foobar" do
       it "should raise an error" do
