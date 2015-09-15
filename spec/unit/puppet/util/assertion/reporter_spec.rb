@@ -15,6 +15,8 @@ describe Puppet::Util::Assertion::Reporter do
   describe ".<<" do
     let(:the_provider) { stub(:failed? => false) }
     let(:the_resource) { stub(:provider => the_provider, :[] => nil) }
+    let(:the_present_subject) { stub(:catalog => true) }
+    let(:the_absent_subject) { stub(:catalog => false) }
 
     before do
       subject.stubs(:count)
@@ -22,6 +24,7 @@ describe Puppet::Util::Assertion::Reporter do
       subject.stubs(:expected_present)
       subject.stubs(:expected_absent)
       subject.stubs(:inequal_value)
+      the_resource.stubs(:[]).with(:subject).returns(the_present_subject)
     end
 
     it "should increment the counter" do
@@ -32,7 +35,7 @@ describe Puppet::Util::Assertion::Reporter do
     context "when the subject is expected to be present but is absent" do
       before do
         the_resource.stubs(:[]).with(:ensure).returns('present')
-        the_resource.stubs(:[]).with(:subject).returns(:absent)
+        the_resource.stubs(:[]).with(:subject).returns(the_absent_subject)
       end
 
       it "should increment the fail counter" do
@@ -49,7 +52,7 @@ describe Puppet::Util::Assertion::Reporter do
     context "when the subject is expected to be present and is present" do
       before do
         the_resource.stubs(:[]).with(:ensure).returns('present')
-        the_resource.stubs(:[]).with(:subject).returns(:stub_resource)
+        the_resource.stubs(:[]).with(:subject).returns(the_present_subject)
       end
 
       it "should evaluate the provider for failure" do
@@ -89,7 +92,7 @@ describe Puppet::Util::Assertion::Reporter do
     context "when the resource is expected to be absent and is present" do
       before do
         the_resource.stubs(:[]).with(:ensure).returns('absent')
-        the_resource.stubs(:[]).with(:subject).returns(:stub_resource)
+        the_resource.stubs(:[]).with(:subject).returns(the_present_subject)
       end
 
       it "should increment the fail counter" do
@@ -106,7 +109,7 @@ describe Puppet::Util::Assertion::Reporter do
     context "when the resource is expected to be absent and is absent" do
       before do
         the_resource.stubs(:[]).with(:ensure).returns('absent')
-        the_resource.stubs(:[]).with(:subject).returns(:absent)
+        the_resource.stubs(:[]).with(:subject).returns(the_absent_subject)
       end
 
       it "should not increment the fail counter" do

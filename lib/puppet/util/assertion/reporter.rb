@@ -18,11 +18,14 @@ module Puppet::Util
       def <<(assertion)
         count
 
-        if assertion[:ensure] != 'absent' and assertion[:subject] == :absent
+        # If ensure is present, and the resource is not in the catalog
+        if assertion[:ensure] != 'absent' and not assertion[:subject].catalog
           fail
           expected_present(assertion)
           return
-        elsif assertion[:ensure] == 'absent' and assertion[:subject] != :absent
+
+        # If ensure is absent, and the resource is in the catalog
+        elsif assertion[:ensure] == 'absent' and assertion[:subject].catalog
           fail
           expected_absent(assertion)
           return
