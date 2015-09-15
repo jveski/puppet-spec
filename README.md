@@ -101,19 +101,6 @@ Stub_class stubs a given class. The stubbed class will accept values for any par
 Stub_type stubs a defined type. Any parameters will be accepted and can be asserted upon. Like the stub_class function, the type name can be namespaced as you would expect.
 
 
-## What should I test?
-Everything!
-
-### Component Modules
-Concentrate on unit tests for resources that receive attribute values from logical expressions or user input, since there are more moving parts and thus, risk. That said, you want to cover every attribute of each resource whenever possible.
-
-Beyond the unit tests, integration tests on high level or entrypoint classes will make future refactoring less painful.
-
-### Roles/profiles
-This is where things get cool. There can be a certain amount of discomfort around proper use of abstraction in Puppet code, since it obscures exactly what resources are included for a given node. By integration testing the node's profile, we can be absolutely certain of which resources will end up in the catalog at any given point in time. I've seen this calm the nerves of even the most paranoid sysadmin.
-
-In this climate, we can freely make changes to the underlying component modules without worrying about undesirable side effects.
-
 ## Want to pitch in?
 I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
 
