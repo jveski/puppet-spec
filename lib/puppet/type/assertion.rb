@@ -35,4 +35,17 @@ Puppet::Type.newtype(:assertion) do
     desc "The expected value of the subject's attribute"
   end
 
+  newparam(:ensure) do
+    desc "If ensure is set to absent, the resource will assert for the absence of the subject in the catalog.
+
+    Defaults to present.
+    "
+
+    defaultto "present"
+
+    validate do |value|
+      fail Puppet::Error, "Ensure only accepts values 'present' or 'absent'" unless value == 'present' or value == 'absent'
+    end
+  end
+
 end

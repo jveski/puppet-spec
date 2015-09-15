@@ -102,3 +102,30 @@ describe Puppet::Type::Assertion::ParameterSubject do
     end
   end
 end
+
+describe Puppet::Type::Assertion::ParameterEnsure do
+  let(:the_resource) { stub }
+  subject { Puppet::Type::Assertion::ParameterEnsure.new(:resource => the_resource) }
+
+  describe ".validate" do
+    context "when given foobar" do
+      it "should raise an error" do
+        expect{subject.validate("foobar")}.to raise_error(
+          "Ensure only accepts values 'present' or 'absent'"
+        )
+      end
+    end
+
+    context "when given absent" do
+      it "should should not raise an error" do
+        expect{subject.validate("absent")}.to_not raise_error
+      end
+    end
+
+    context "when given present" do
+      it "should should not raise an error" do
+        expect{subject.validate("present")}.to_not raise_error
+      end
+    end
+  end
+end
