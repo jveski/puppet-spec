@@ -30,7 +30,7 @@ Ruby:
   * 2.0.0
   * 1.9.3
 
-### Your first test case
+### A simple test case
 ```puppet
 file { '/tmp/test':
   ensure  => present,
@@ -50,24 +50,24 @@ assertion { 'that the file is present':
 }
 ```
 
-Wait, what?
-
-Okay, let's break down the attributes of the assertion resource type.
-
-#### Title
+#### The Assertion Resource Type
+##### Title
 The assertion's title should reflect what it is attempting to prove. This value will not used during evaluation, and will only be displayed if the assertion fails.
 
-#### Subject
+##### Subject
 This attribute's value should be a reference to the resource under question. i.e. `File['the title']` Like the ordering metaparams, etc.
 
-#### Attribute
+##### Attribute
 Attribute determines which attribute of the subject we are asserting on.
 
-#### Expectation
+##### Expectation
 Expectation should be set to the expected value of the subject's attribute as determined by the `subject` and `attribute` params. It's required if attribute is provided.
 
+##### Ensure
+Defaults to 'present', and accepts values 'present' and 'absent'. If the ensure attribute is set to absent, the assertion will validate that the subject is absent from the catalog. Expectation and attribute cannot be set in conjunction with ensure => 'absent'.
 
-Okay. Puppet spec test cases are just manifests that happen to contain assertion resources. A typical testcase is essentially an example (declaration test) with assertions. These assertions prove that the resources that have been included in the catalog are in fact what we intended. The tests tend to look something like the below.
+
+Puppet spec test cases are just manifests that happen to contain assertion resources. A typical testcase is essentially an example (declaration test) with assertions. These assertions prove that the resources that have been included in the catalog are in fact what we intended. The tests tend to look something like the below.
 ```puppet
 include apache
 
