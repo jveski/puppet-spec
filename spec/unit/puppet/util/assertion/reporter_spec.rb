@@ -13,61 +13,113 @@ describe Puppet::Util::Assertion::Reporter do
   end
 
   describe ".<<" do
-    let(:the_resource) { stub(:provider => the_provider) }
+    let(:the_provider) { stub(:failed? => false) }
+    let(:the_resource) { stub(:provider => the_provider, :[] => nil) }
 
     before do
       subject.stubs(:count)
       subject.stubs(:fail)
-      subject.stubs(:report)
+      subject.stubs(:expected_present)
+      subject.stubs(:expected_absent)
+      subject.stubs(:inequal_value)
     end
 
-    context "when given a true assertion" do
-      let(:the_provider) { stub(:failed? => false) }
+    it "should increment the counter" do
+      subject.expects(:count)
+      subject << the_resource
+    end
 
-      it "should evaluate the assertion" do
-        the_provider.expects(:failed?)
+    context "when the subject is expected to be present but is absent" do
+      before do
+        the_resource.stubs(:[]).with(:ensure).returns('present')
+        the_resource.stubs(:[]).with(:subject).returns(:absent)
+      end
+
+      it "should increment the fail counter" do
+        subject.expects(:fail).once
         subject << the_resource
       end
 
-      it "should increment the assertion counter" do
-        subject.expects(:count)
+      it "should print a message" do
+        subject.expects(:expected_present)
+        subject << the_resource
+      end
+    end
+
+    context "when the subject is expected to be present and is present" do
+      before do
+        the_resource.stubs(:[]).with(:ensure).returns('present')
+        the_resource.stubs(:[]).with(:subject).returns(:stub_resource)
+      end
+
+      it "should evaluate the provider for failure" do
+        the_provider.expects(:failed?).returns(:stub_results)
         subject << the_resource
       end
 
-      it "should not increment the failed counter" do
+      context "if the assertion did not fail" do
+        before { the_provider.stubs(:failed?).returns(false) }
+
+        it "should not increment the fail counter" do
+          subject.expects(:fail).never
+          subject << the_resource
+        end
+
+        it "should not print the report" do
+          subject.expects(:inequal_value).never
+          subject << the_resource
+        end
+      end
+
+      context "if the assertion failed" do
+        before { the_provider.stubs(:failed?).returns(true) }
+
+        it "should increment the fail counter" do
+          subject.expects(:fail).once
+          subject << the_resource
+        end
+
+        it "should print the report" do
+          subject.expects(:inequal_value).with(the_resource)
+          subject << the_resource
+        end
+      end
+    end
+
+    context "when the resource is expected to be absent and is present" do
+      before do
+        the_resource.stubs(:[]).with(:ensure).returns('absent')
+        the_resource.stubs(:[]).with(:subject).returns(:stub_resource)
+      end
+
+      it "should increment the fail counter" do
+        subject.expects(:fail).once
+        subject << the_resource
+      end
+
+      it "should print a message" do
+        subject.expects(:expected_absent)
+        subject << the_resource
+      end
+    end
+
+    context "when the resource is expected to be absent and is absent" do
+      before do
+        the_resource.stubs(:[]).with(:ensure).returns('absent')
+        the_resource.stubs(:[]).with(:subject).returns(:absent)
+      end
+
+      it "should not increment the fail counter" do
         subject.expects(:fail).never
         subject << the_resource
       end
 
-      it "should not print the assertion" do
-        subject.expects(:report).never
+      it "should not print a message" do
+        subject.expects(:expected_absent).never
         subject << the_resource
       end
     end
 
-    context "when given a false assertion" do
-      let(:the_provider) { stub(:failed? => true) }
-
-      it "should evaluate the assertion" do
-        the_provider.expects(:failed?)
-        subject << the_resource
-      end
-
-      it "should increment the assertion counter" do
-        subject.expects(:count)
-        subject << the_resource
-      end
-
-      it "should increment the failed counter" do
-        subject.expects(:fail)
-        subject << the_resource
-      end
-
-      it "should print the assertion" do
-        subject.expects(:report).with(the_resource)
-        subject << the_resource
-      end
-    end
   end
 
   describe ".print_footer" do

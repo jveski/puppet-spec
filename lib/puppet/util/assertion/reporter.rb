@@ -13,14 +13,27 @@ module Puppet::Util
       end
 
       # Given an assertion resource, evaluate it for success
-      # and send it to .report on failure. Increment the counter
-      # for each resource, and the failed counter for failed resources.
+      # and on failure, call the appropriate method responsible 
+      # to render the message, and increment the counter(s).
       def <<(assertion)
         count
+
+        if assertion[:ensure] != 'absent' and assertion[:subject] == :absent
+          fail
+          expected_present
+          return
+        elsif assertion[:ensure] == 'absent' and assertion[:subject] != :absent
+          fail
+          expected_absent
+          return
+        end
+
         if assertion.provider.failed?
           fail
-          report(assertion)
+          inequal_value(assertion)
+          return
         end
+
       end
 
       # Print the summary of evaluated assertions
