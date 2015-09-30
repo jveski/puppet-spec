@@ -1,3 +1,8 @@
+## 2015-09-30 - 1.2.0
+#### Improvements
+- Issue #3 - Regex expectations
+- Issue #14 - Negative assertions
+
 ## 2015-09-09 - 1.1.1
 #### Improvements
 - Issue #4 - Documentation Corrections
