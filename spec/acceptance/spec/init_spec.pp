@@ -51,3 +51,9 @@ assertion { 'that the undesired file is not in the catalog':
   ensure  => absent,
   subject => File['/tmp/should/not/be/around'],
 }
+
+assertion { 'that the other configuration file has the correct contents':
+  subject     => File['/tmp/test2'],
+  attribute   => 'content',
+  expectation => fixture('test2'),
+}
