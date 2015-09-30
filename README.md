@@ -113,6 +113,15 @@ assertion { 'that the file has the correct very long contents':
 }
 ```
 
+## Negative Assertions
+Considering that Puppet modules often make use of logical expressions to entirely exclude certain resources from the catalog, Puppet spec's assertion resource type has an ensure attribute, which when given the value `absent`, sets an expectation on the absence of a resource from the catalog.
+
+```puppet
+assertion { 'that the undesired file is not in the catalog':
+  ensure  => absent,
+  subject => File['/tmp/should/not/be/around'],
+}
+```
 
 ## Want to pitch in?
 I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
