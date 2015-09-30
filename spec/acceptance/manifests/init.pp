@@ -24,4 +24,9 @@ class acceptance {
     ensure => 'around',
   }
 
+  file { '/tmp/test2':
+    ensure  => present,
+    content => "stub content\n",
+  }
+
 }

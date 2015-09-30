@@ -101,6 +101,19 @@ Stub_class stubs a given class. The stubbed class will accept values for any par
 Stub_type stubs a defined type. Any parameters will be accepted and can be asserted upon. Like the stub_class function, the type name can be namespaced as you would expect.
 
 
+## Fixtures
+Asserting on attributes with a very long expectation can be unpleasant, so Puppet spec provides a `fixture` function which reads from a given file underneath `spec/fixtures`.
+
+### Example
+```puppet
+assertion { 'that the file has the correct very long contents':
+  subject     => File['/tmp/largefile'],
+  attribute   => 'content',
+  expectation => fixture('file_contents'), #This would load the file `<module>/spec/fixtures/file_contents`
+}
+```
+
+
 ## Want to pitch in?
 I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
 
