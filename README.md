@@ -125,12 +125,3 @@ assertion { 'that the undesired file is not in the catalog':
 
 ## Want to pitch in?
 I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
-
-### Development Workflow
-  * `bundle install`
-  * `bundle exec rake spec`
-  * `bundle exec rake acceptance`
-  * change things
-  * `bundle exec rake spec`
-  * `bundle exec rake acceptance`
-  * etc.
