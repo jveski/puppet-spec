@@ -1,5 +1,6 @@
 language: ruby
 env:
+  - PUPPET_VERSION=4.3.0
   - PUPPET_VERSION=4.2.2
   - PUPPET_VERSION=4.2.1
   - PUPPET_VERSION=4.2.0
