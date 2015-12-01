@@ -9,7 +9,7 @@ Puppet-spec is intended to provide a low barrier to entry for those new to testi
 ## Getting Started
 ### Installation
 #### Puppet Module
-You can install the Puppet spec module by cloning this repository into your modulepath, or by running `puppet module install jordan/spec`. Once the module is in your modulepath, the Puppet application `puppet spec` will be available.
+You can install the Puppet spec module by cloning this repository into your modulepath, or by running `puppet module install jordan/spec`. The `puppet spec` command will be available once the module has been installed.
 
 #### Rubygem
 If your Puppet module has a Gemfile, you can add the gem `puppet-spec` as a dependency and include the bundled rake task to simplify the process of invoking your test suite.
@@ -52,13 +52,14 @@ assertion { 'that the file is present':
 
 #### The Assertion Resource Type
 ##### Title
-The assertion's title should reflect what it is attempting to prove. This value will not used during evaluation, and will only be displayed if the assertion fails.
+The assertion's title should reflect what it is attempting to prove. This value will not used during evaluation, and serves only to provide insight to the user in the event that the assertion fails.
 
 ##### Subject
-This attribute's value should be a reference to the resource under question. i.e. `File['the title']` Like the ordering metaparams, etc.
+A resource reference to the resource under test, i.e. `File['/etc/puppetlabs/puppet/puppet.conf']`.
 
 ##### Attribute
-Attribute determines which attribute of the subject we are asserting on.
+If the attribute parameter is not provided, the assertion will prove only the presence of the subject resource in the catalog.
+Otherwise, attribute can be used to select which attribute of the subject resource the assertion will set an expectation on.
 
 ##### Expectation
 Expectation should be set to the expected value of the subject's attribute as determined by the `subject` and `attribute` params. It's required if attribute is provided.
@@ -67,12 +68,13 @@ Expectation should be set to the expected value of the subject's attribute as de
 Defaults to 'present', and accepts values 'present' and 'absent'. If the ensure attribute is set to absent, the assertion will validate that the subject is absent from the catalog. Expectation and attribute cannot be set in conjunction with ensure => 'absent'.
 
 
-Puppet spec test cases are just manifests that happen to contain assertion resources. A typical testcase is essentially an example (declaration test) with assertions. These assertions prove that the resources that have been included in the catalog are in fact what we intended. The tests tend to look something like the below.
+Puppet spec test cases are just manifests that contain assertion resource declarations. A typical test case is essentially an example (smoke test) with assertions.
+The assertions prove that the referenced resources have been included in the catalog and have the expected attributes. Test cases tend to look something like the below.
 ```puppet
 include apache
 
 assertion { 'that the apache::ssl class is in the catalog':
-  subject     => Class['apache::ssl'],
+  subject => Class['apache::ssl'],
 }
 
 assertion { 'that the apache package version is correct':
@@ -102,7 +104,7 @@ Stub_type stubs a defined type. Any parameters will be accepted and can be asser
 
 
 ## Fixtures
-Asserting on attributes with a very long expectation can be unpleasant, so Puppet spec provides a `fixture` function which reads from a given file underneath `spec/fixtures`.
+Asserting on attributes with a long value can cause test suites to become unmanageably large, so Puppet spec provides a `fixture` function which reads from a given file underneath `spec/fixtures`.
 
 ### Example
 ```puppet
@@ -114,7 +116,7 @@ assertion { 'that the file has the correct very long contents':
 ```
 
 ## Negative Assertions
-Considering that Puppet modules often make use of logical expressions to entirely exclude certain resources from the catalog, Puppet spec's assertion resource type has an ensure attribute, which when given the value `absent`, sets an expectation on the absence of a resource from the catalog.
+Considering that Puppet modules often make use of logical expressions to exclude resources from the catalog, Puppet spec's assertion resource type has an ensure attribute, which when given the value `absent`, sets an expectation on the absence of a resource from the catalog.
 
 ```puppet
 assertion { 'that the undesired file is not in the catalog':
@@ -124,4 +126,4 @@ assertion { 'that the undesired file is not in the catalog':
 ```
 
 ## Want to pitch in?
-I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug. If your changes have good tests (irony?), I'll merge and not yell at you even a little bit. If you're not up for the hacking, feel free to open an issue and I'll have a look.
+I wrote this tool because I felt that the community could use an approachable testing mechanism in Puppet's native tongue. If you feel the same, feel free to take on an open GH issue, or find a bug.
